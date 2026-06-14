@@ -1,9 +1,11 @@
 from random import randint
 
+from digital_signature.digital_signature import DigitalSignature
 from division.division_binary_search import division_binary_search
 from division.division_naive import division_naive
 from division.division_school import division_school
 from rsa import rsa_api
+
 
 def division_main():
     divisions = [division_naive, division_binary_search, division_school]
@@ -13,18 +15,25 @@ def division_main():
             print(division(a, b), end=" ")
         print()
 
+
 def rsa_main():
     message = "Hello World"
-    pub, priv = rsa_api.generate_keys(1024)
+    pub, priv = rsa_api.generate_keys(128)
     encoded_message = rsa_api.encrypt(message, pub)
     decoded_message = rsa_api.decrypt(encoded_message, priv)
     print(decoded_message)
-    
+
+
+def digital_signature_main():
+    message = "Hello World"
+    digital_signature = DigitalSignature(1024)
+    signed_message = digital_signature.sign(message)
+
+    public_key = digital_signature.public_key
+    print(DigitalSignature.check_signed_data(message, signed_message, public_key))
 
 def main():
-    rsa_main()
-    
-        
+    digital_signature_main()
 
 
 if __name__ == "__main__":

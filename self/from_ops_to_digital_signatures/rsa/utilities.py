@@ -5,16 +5,15 @@ from gcd.euclid import extended_euclid
 
 
 def fast_pow(x: int, e: int, mod: int) -> int:
-    if e == 0:
-        return 1
-    if e == 1:
-        return x
-    result = fast_pow(x, e // 2, mod)
-    result *= result
-    result %= mod
-    if e % 2 == 1:
-        result *= x
-        result %= mod
+    result = 1
+    bit_result = x % mod
+    while e > 0:
+        if e % 2 == 1:
+            result *= bit_result
+            result %= mod
+        e = e // 2
+        bit_result *= bit_result
+        bit_result %= mod
     return result
 
 

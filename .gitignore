@@ -5,7 +5,7 @@ __pycache__/
 Plan.md
 # C extensions
 *.so
-
+*code_analysis.txt
 # Distribution / packaging
 .Python
 build/

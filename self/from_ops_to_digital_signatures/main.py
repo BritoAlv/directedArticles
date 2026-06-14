@@ -1,9 +1,9 @@
 from random import randint
 
 from digital_signature.digital_signature import DigitalSignature
-from division.division_binary_search import division_binary_search
-from division.division_naive import division_naive
-from division.division_school import division_school
+from basic_operations.division_binary_search import division_binary_search
+from basic_operations.division_naive import division_naive
+from basic_operations.division_school import division_school
 from rsa import rsa_api
 
 

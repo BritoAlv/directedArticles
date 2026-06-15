@@ -4,8 +4,6 @@ To every positive number can be associated a nonempty set of numbers, its diviso
 
 $$g = \gcd(a, b)$$
 
-Factoring a number is not an easy task, so finding this number without having to compute the divisors of both $a$, $b$ is interesting.
-
 ## How Compute It
 
 It can be done, starting with the fact that:
@@ -21,14 +19,16 @@ $$\gcd(a, b) = \gcd(b, a \bmod b)$$
 Again show that those two sets are equal. This allows the following algorithm:
 
 ```python
-gcd(a, b):
+def gcd(a, b):
     if a < b:
         swap(a, b)
 
     return gcd(b, a % b)
 ```
 
-Why it stops: $a \geq b > a \bmod b$, this process every time decreases the remainder number, eventually it will be $0$.
+Why it stops: 
+
+$a \geq b > a \bmod b$, this process every time decreases the remainder number, eventually it will be $0$.
 
 ### Number of Steps of the Algorithm.
 
@@ -72,7 +72,7 @@ Somehow the gcd is the smallest positive element of this set.
 
 To see why, the integers $a, b$ exists, linear algebra can be used, as $[a_n, b_n]$ is a linear transformation of $[a_{n-1}, b_{n-1}]$.
 
-This not only shows that those integers exists, but also gives a way to compute them, and the number of steps is the same as the one of the gcd algorithm.
+This not only shows that those integers exists, but also gives a way to compute them, and the number of steps is the same as in the gcd algorithm.
 
 The linear transformation is:
 
@@ -86,7 +86,7 @@ Finally:
 
 $$\begin{bmatrix} a_n \\ b_n \end{bmatrix} = M_n \cdot \begin{bmatrix} a_{n-1} \\ b_{n-1} \end{bmatrix}$$
 
-The linear algebra approach, gives the formula for the integers, and allows computing them in the original euclid algorithm.
+The linear algebra approach, gives the formula for the integers, and allows computing them in the original Euclid algorithm.
 
 Proves that $g$ is on the set, to show that it should be the smallest element, assume otherwise.
 
@@ -116,5 +116,5 @@ Why those two numbers are important?
 ## Notes
 
 - gcd algorithm is fast, number of steps is $m \cdot \text{division cost}$, $m$ is the number of bits of $\max(a, b)$.
-- the linear algebra approach allows to express the computational process of finding a pair of $x, y$, such that $ax + by = \gcd(a, b)$ in a concise way.
-- the fact that the gcd is the smallest element of the set formed by the linear combinations is not trivial.
+- The linear algebra approach allows expressing the computational process of finding a pair of $x, y$, such that $ax + by = \gcd(a, b)$ in a concise way.
+- The fact that the gcd is the smallest element of the set formed by the linear combinations is not trivial.

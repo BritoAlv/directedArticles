@@ -4,6 +4,7 @@ from digital_signature.digital_signature import DigitalSignature
 from basic_operations.division_binary_search import division_binary_search
 from basic_operations.division_naive import division_naive
 from basic_operations.division_school import division_school
+from gcd import coprime_experiment
 from rsa import rsa_api
 
 
@@ -32,8 +33,9 @@ def digital_signature_main():
     public_key = digital_signature.public_key
     print(DigitalSignature.check_signed_data(message, signed_message, public_key))
 
+
 def main():
-    digital_signature_main()
+    coprime_experiment.experiment(100000, 100000)
 
 
 if __name__ == "__main__":

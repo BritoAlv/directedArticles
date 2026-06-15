@@ -21,7 +21,7 @@ There can't be a strictly decreasing sequence of positive integers.
 
 The next step involves having an algorithm to obtain those two numbers, with the idea of the subsequence a naive algorithm could be written.
 
-The problem of this algorithm is that the number of steps it takes depends on how many times $b$ can be subtracted / added from $a$. So the question is about whether there is a better one?
+The problem of this algorithm is that the number of steps it takes depends on how many times $b$ can be subtracted / added from $a$. So the question is about whether there is a better one$?$
 
 ### Binary Search Algorithm
 
@@ -68,3 +68,8 @@ a_1 a_2 \dots a_n (X - 1) &< b_1 b_2 \dots b_n 0 \\
 $$
 
 This means it will take a number of steps proportional of $X \cdot m$ steps, in each step we do at most $2 \cdot X$ operations, shift / addition and subtraction, and there are at most $m$ steps. The cost of addition / subtraction / shift is $m$, $m$ is the number of digits, so this algorithm uses a number of steps proportional to $m^2$ steps.
+
+### Notes
+
+- Division algorithm takes time proportional to $m^2$ steps.
+- School algorithm is fast, but not easy to prove how it works with an abstract base.

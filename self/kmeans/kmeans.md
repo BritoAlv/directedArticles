@@ -1,6 +1,6 @@
 ## K-Means
 
-In the real world let's say that we can gather some numerical values about something, we end up with $n$ vectors where each dimension of the vector represent one kind of numerical value,
+In the real world let's say that there are $n$ things and $m$ numerical metrics about them, a table with $n$ rows and $m$ columns. Or in vector words, $n$ vectors where each dimension of the vector represent one kind of numerical value, a column.
 
 The question is: Does this vectors have a hidden group structure that makes sense to the domain experts?
 
@@ -18,11 +18,11 @@ Let's say that there is an initial partition $P = \{G_1, G_2, \dots, G_k\}$ of a
 
 One metric $M$ about a group $G$ is the sum of the squared distances of each vector to the average vector.
 
-$$A_G = \frac{\sum_{x \in G} x}{G}$$
+$$A_G = \frac{\sum_{x \in G} x}{|G|}$$
 
 $$M_G = \sum_{x \in G} \|x - A_G\|^2$$
 
-If we sum this metric over the groups, we get a metric about the partition
+If this metric is summed over the groups, a new metric is obtained about the partition
 
 $$\sum_{g \in P} M_g = \sum_{g \in P} \left(\sum_{x \in g} \|x - A_g\|^2\right)$$
 
@@ -30,33 +30,33 @@ K-means is an algorithm that iteratively tries to improve this metric by finding
 
 In every iteration it performs two steps.
 
-One step is that given a partition with $k$ sets, this determines $k$ average vectors, K-means creates another partition assigning every vector the average vector closest to it. This can only improve the metric, since if a vector changes its assigned vector is because there is one closest.
+One step is that given a partition with $k$ sets, this determines $k$ average vectors, K-means creates another partition assigning to every vector the average vector closest to it. This can't increase the metric, since if a vector changes its assigned vector is because there is one closest.
 
-Then again, we have a partition, but because this is different we may have new the average vectors, and consequently the metric value may have changed.
+Then again, there is a partition, but may have new the average vectors, and consequently the metric value may have changed.
 
 This step improves the metric again, and the reason is the following:
 
 At this point, the vectors in every group have assigned a vector (the previous average vector), which could or not could be the actual average vector of a group (after the step of reassigning).
 
-Fact: Given a list of vectors $V$, and a vector $v$, we can compute:
+Fact: Given a list of vectors $V$, and a vector $v$, something than can be computed is:
 $$\sum_{x \in V} \|x - v\|^2$$
 
 The question is for which $v$ is that sum minimized, it turns out that if $v$ is the average vector of $V$, then that sum is minimized.
 
 It's because:
 $$\begin{align}
-\sum_{x \in V} \|x - v\|^2 &= n\|v\|^2 + \left(\sum_{x \in V} \|x\|^2\right) - 2v \cdot \left(\sum_{x \in V} x\right)
+\sum_{x \in V} \|x - v\|^2 &= |V|\|v\|^2 + \left(\sum_{x \in V} \|x\|^2\right) - 2v \cdot \left(\sum_{x \in V} x\right)
 \end{align}$$
 
 Which means to minimize the following:
 $$\begin{align}
-n\|v\|^2 - 2v \cdot \left(\sum_{x \in V} x\right) &= n\|v\|^2 - 2n v \cdot P \\
-&= \|v\|^2 - 2v \cdot P
+|V|\|v\|^2 - 2v \cdot \left(\sum_{x \in V} x\right) &= |V|\|v\|^2 - 2|V| v \cdot A_V \\
+&= |V|(\|v\|^2 - 2v \cdot A_V)
 \end{align}$$
 
-How prove that $v = P$ is the minimum?, if $v$ were a vector with only one coordinate it's a matter of differentiate and find the zero of the function, but is this still valid when $v$ has more than one dimension?
+How prove that $v = A_V$ is the minimum?, if $v$ were a vector with only one coordinate it's a matter of differentiate and find the zero of the function, but is this still valid when $v$ has more than one dimension?
 
-With that lemma / result, can be seen why that step improves the metrics.
+With that lemma / result, can be seen why that step can't increase the metrics.
 
 K-means applies those two steps one after the other in a loop, so the question is what makes it stop?
 

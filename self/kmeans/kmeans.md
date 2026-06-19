@@ -12,7 +12,7 @@ What makes K-means different from an algorithm that will chose one of the finite
 
 Interesting question: Can there be an algorithm that uniformly random returns a partition given $k$, and the list of vectors, even tough the number of partitions is a big number.
 
-Shouldn't be because else this algorithm could be used to start the K-means algorithm and it's not used, also the sample space contains an exponential number of elements.
+Well a basic algorithm is assign to every vector with probability 1/k one of the sets. Here there could be empty sets to start with. 
 
 Let's say that there is an initial partition $P = \{G_1, G_2, \dots, G_k\}$ of a list of vectors $V$ that has $k$ sets.
 
@@ -34,7 +34,7 @@ One step is that given a partition with $k$ sets, this determines $k$ average ve
 
 Then again, there is a partition, but may have new the average vectors, and consequently the metric value may have changed.
 
-This step improves the metric again, and the reason is the following:
+This other step improves the metric again, and the reason is the following:
 
 At this point, the vectors in every group have assigned a vector (the previous average vector), which could or not could be the actual average vector of a group (after the step of reassigning).
 
@@ -75,7 +75,7 @@ The K-means problem is about given a list of vectors and a number $k$, find the 
 
 A question is what will be the type of data where applying K-Means could be adequate? From the way the algorithm works, I guess that should be groups that can be enclosed in balls, so that disjoint balls can be deduced.
 
-Two questions that don't have a definitive answer (there are different ways of doing it):
+Two questions that remains are:
 
 - How define the initial partition.
 - What's a correct number of groups.

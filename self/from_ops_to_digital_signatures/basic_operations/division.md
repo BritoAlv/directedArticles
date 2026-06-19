@@ -72,4 +72,4 @@ This means it will take a number of steps proportional of $X \cdot m$ steps, in 
 ### Notes
 
 - Division algorithm takes time proportional to $m^2$ steps.
-- School algorithm is fast, but not easy to prove how it works with an abstract base.
+- School algorithm is fast, but not easy to prove how it works with a generic base.

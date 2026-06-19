@@ -30,7 +30,7 @@ Public key (lock) will be one exponent $e$ and the modulus $n$, so to encrypt a 
 
 Thanks to the algorithm of fast exponentiation, $P^e \mod n$ can be computed on a feasible number of steps, proportionally to the number of bits of $e$.
 
-An implementation of the RSA system has to provide a injective mapping from the set of messages to $(0, n-1)$.
+An implementation of the RSA system has to provide an injective mapping from the set of messages to $(0, n-1)$.
 
 ## Security
 

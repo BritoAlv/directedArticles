@@ -1,8 +1,14 @@
-## K-Means
+# K-Means
+
+## Problem It Solves:
 
 Let's say that there are $n$ things and $m$ numerical metrics about them, a table with $n$ rows and $m$ columns. Or in vector words, $n$ vectors where each dimension of the vector represent one kind of numerical value, a column.
 
-The question is: Does this vectors have a hidden group structure that makes sense to the domain experts?
+The question is: Does this vectors have a hidden group structure that may make sense to the domain experts?
+
+More specifically if this vectors can be separated in disjoint-ball like groups K-Means can be used to find those groups with a computer.
+
+## How It Solves It:
 
 K-means is an algorithm of grouping, which means that it will group the vectors in some predetermined number of groups, whether those groups makes sense have to be determined later by domain experts.
 
@@ -10,9 +16,9 @@ So given a number of groups $k$, and a list of vectors it will return a partitio
 
 What makes K-means different from an algorithm that will chose one of the finite partitions with $k$ groups that can be created from the list of vectors.
 
-Interesting question: Can there be an algorithm that uniformly random returns a partition given $k$, and the list of vectors, even tough the number of partitions is a big number.
+Interesting question: Can there be an algorithm that uniformly random returns a partition given $k$, and the list of vectors, the thing is that the number of partitions (sample space here) is a big number.
 
-Well a basic algorithm is assign to every vector with probability 1/k one of the sets. Here there could be empty sets to start with. 
+Well, a basic algorithm is assign to every vector with probability $\frac{1}{k}$ one of the sets. Here there could be empty sets to start with.
 
 Let's say that there is an initial partition $P = \{G_1, G_2, \dots, G_k\}$ of a list of vectors $V$ that has $k$ sets.
 
@@ -27,6 +33,8 @@ If this metric is summed over the groups, a new metric is obtained about the par
 $$M_P = \sum_{g \in P} \left(\sum_{x \in g} \|x - A_g\|^2\right)$$
 
 K-means is an algorithm that iteratively tries to improve this metric by finding partitions that have strictly smaller value of the metric.
+
+## Mathematical Idea of Greedy Optimization Algorithm
 
 In every iteration it performs two steps.
 
@@ -66,6 +74,8 @@ Those two steps have two outcomes:
 
 This means that either the algorithm get stuck in a partition or it finds a new one with smaller metric than the previous one. Because there are a finite number of partitions and the algorithm builds a strictly decreasing sequence of partitions (sorted by its metric) it can't run indefinitely.
 
+## Conclusions from the Algorithm
+
 From the greedy perspective, there are some conclusions:
 
 - it may take exponential steps to finish.
@@ -73,7 +83,7 @@ From the greedy perspective, there are some conclusions:
 
 The K-means problem is about given a list of vectors and a number $k$, find the partition that has the smallest value of the metric. The greedy algorithm can ensure it finds it, cause it getting stuck doesn't mean it found the best partition.
 
-A question is what will be the type of data where applying K-Means could be adequate? From the way the algorithm works, I guess that should be groups that can be enclosed in balls, so that disjoint balls can be deduced.
+A question is what will be the type of data where applying K-Means could be adequate? From the way the algorithm works, I guess that should be groups that can be enclosed in balls.
 
 Two questions that remains are:
 

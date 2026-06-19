@@ -1,6 +1,6 @@
 ## K-Means
 
-In the real world let's say that there are $n$ things and $m$ numerical metrics about them, a table with $n$ rows and $m$ columns. Or in vector words, $n$ vectors where each dimension of the vector represent one kind of numerical value, a column.
+Let's say that there are $n$ things and $m$ numerical metrics about them, a table with $n$ rows and $m$ columns. Or in vector words, $n$ vectors where each dimension of the vector represent one kind of numerical value, a column.
 
 The question is: Does this vectors have a hidden group structure that makes sense to the domain experts?
 
@@ -24,7 +24,7 @@ $$M_G = \sum_{x \in G} \|x - A_G\|^2$$
 
 If this metric is summed over the groups, a new metric is obtained about the partition
 
-$$\sum_{g \in P} M_g = \sum_{g \in P} \left(\sum_{x \in g} \|x - A_g\|^2\right)$$
+$$M_P = \sum_{g \in P} \left(\sum_{x \in g} \|x - A_g\|^2\right)$$
 
 K-means is an algorithm that iteratively tries to improve this metric by finding partitions that have strictly smaller value of the metric.
 
@@ -77,5 +77,5 @@ A question is what will be the type of data where applying K-Means could be adeq
 
 Two questions that don't have a definitive answer (there are different ways of doing it):
 
-- how define the initial partition.
-- what's a correct number of groups.
+- How define the initial partition.
+- What's a correct number of groups.

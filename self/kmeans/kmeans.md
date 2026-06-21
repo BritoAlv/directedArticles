@@ -6,13 +6,13 @@ Let's say that there are $n$ things and $m$ numerical metrics about them, a tabl
 
 The question is: Does this vectors have a hidden group structure that may make sense to the domain experts?
 
-More specifically if this vectors can be separated in disjoint-ball like groups K-Means can be used to find those groups with a computer.
+More specifically if this vectors can be separated in disjoint-ball like groups K-Means can be used to find those groups with a computing device.
 
 ## How It Solves It:
 
 K-means is an algorithm of grouping, which means that it will group the vectors in some predetermined number of groups, whether those groups makes sense have to be determined later by domain experts.
 
-So given a number of groups $k$, and a list of vectors it will return a partition of those vectors that has $k$ groups.
+So given a number of groups $k$, and a list of vectors $V$ it will return a partition of those vectors that has $k$ groups.
 
 What makes K-means different from an algorithm that will chose one of the finite partitions with $k$ groups that can be created from the list of vectors.
 
@@ -78,10 +78,10 @@ This means that either the algorithm get stuck in a partition or it finds a new 
 
 From the greedy perspective, there are some conclusions:
 
-- it may take exponential steps to finish.
+- it may take many steps as partitions it could reach.
 - The actual value of the metric is irrelevant, moreover what's the difference between two partitions whose metric differ by any quantity.
 
-The K-means problem is about given a list of vectors and a number $k$, find the partition that has the smallest value of the metric. The greedy algorithm can ensure it finds it, cause it getting stuck doesn't mean it found the best partition.
+The K-means problem is about given a list of vectors and a number $k$, find the partition that has the smallest value of the metric. The greedy algorithm can't ensure it finds it, cause it getting stuck doesn't mean it found the best partition.
 
 A question is what will be the type of data where applying K-Means could be adequate? From the way the algorithm works, I guess that should be groups that can be enclosed in balls.
 

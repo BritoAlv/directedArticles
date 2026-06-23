@@ -1,6 +1,6 @@
 ## Projection Matrix
 
-Question: Let's say, in euclidean space, $d$ coordinates, fix a vector $v$, the projection of any vector $x$ on $v$ is a linear transformation, so what's its matrix?
+Question: Let's say, in euclidean space, $d$ dimensions. Fix a vector $v$, the projection of any vector $x$ on $v$ is a linear transformation, so what's its matrix?
 
 $v = m_1 e_1 + \dots + m_d e_d$
 
@@ -12,28 +12,29 @@ $A'x = \langle x, v \rangle v$
 
 $A = \frac{v v^T}{v^T v}$
 
-Observe that the matrix $v v^T$ has rank one as each column is a multiple of $v$.
+The matrix $v v^T$ has rank one as each column is a multiple of $v$.
 
 This derivation is based on observing the algebraic values, but can't be interpreted easily, other way of deriving is by analyzing what $A$ does to the $e_i$ vectors, in fact, the columns of $A$, should be those values.
 
 $A(e_i) = v_i \cdot \frac{1}{\|v\|} v$
 
-This can be obtained by triangle similarity, finally $A$ is formed by the column vectors $v_i \cdot \frac{1}{\|v\|} v$, which makes clear the previous result, and the fact that the rank of the matrix is $1$. ie all of its columns are multiples of $v$.
+This can be obtained by triangle similarity, $A$ is formed by the column vectors $v_i \cdot \frac{1}{\|v\|} v$, which makes clear the previous result, and the fact that the rank of the matrix is $1$. ie all of its columns are multiples of $v$.
 
-Again, the columns of a matrix $A$ that indicates a linear map are the effect of this linear map on the basis vectors $e_i$.
+Again, $A$ is a linear map whose columns indicates the effect of this linear map on the basis vectors $e_i$.
 
 ## Scaling in a Specific Direction
 
-Now fix a vector $v$, for every vector $x$ there is another vector $\text{proj}_v x$ which is the projection of $x$ on $v$, question, given a scalar factor $k$:
+Now fix a vector $v$, for every vector $x$ there is another vector $\text{proj}_v x$ which is the projection of $x$ on $v$.
 
-What's the vector $y$ such that:
+Question: Given a scalar factor $k$, what's the vector $y$ such that its projection on $v$ is $k$ times the projection on $v$ of $x$.
 
 $x \mapsto \text{proj}_v x$
+
 $y \mapsto k \cdot \text{proj}_v x$
 
 Observe that this question does not make sense, there are infinitely vectors $y$ such that their projection on $v$ is the vector $k \cdot (\text{proj}_v x)$, precisely because the projection map has rank $1 < \text{(number of dimensions of the space)}$.
 
-To fix the question, let's assume that:
+To fix the question, let's choose $v = e_1$:
 
 $x = x_1 e_1 + \dots x_d e_d$
 
@@ -47,7 +48,7 @@ Its matrix is $D = [e_1 \cdot k, e_2, e_3, \dots, e_d]$.
 
 That was easy to do because the $e_i$ is the standard base, what if not?
 
-Question, let's say there is a base $\{v_1, v_2, \dots, v_d\}$, and a vector $x$, what's the matrix of the linear transformation that scales $x$ by a factor of $k$ in the $v_1$ direction?
+Question: Let's say there is a base $\{v_1, v_2, \dots, v_d\}$, and a vector $x$, what's the matrix of the linear transformation that scales $x$ by a factor of $k$ in the $v_1$ direction?
 
 One intuitive approach is write:
 
@@ -55,7 +56,11 @@ $A(e_i) = v_i$
 
 $B(v_i) = e_i, B = A^{-1}$
 
-The matrix we are looking for is: $ADA^{-1}$, take the vectors from the standard base, to the $v$ base, apply the scaling there, since it's easy to do, and then take them back to the standard base.
+The matrix we are looking for is:
+
+$$ADA^{-1}$$
+
+Take the vectors from the standard base, to the $v$ base, apply the scaling there, since it's easy to do, and then take them back to the standard base.
 
 There is other approach which is the following:
 
@@ -63,14 +68,15 @@ Let $P$ be the projection matrix on the vector $v_1$, and $T$ the matrix we are 
 
 $x = Px + (x - Px)$
 
-$Tx = k \cdot Px + (x - Px)$
+$Tx = k \cdot Px + (x - Px)$ (2)
+
 $Tx = (k \cdot P + I - P)x$
 
 From this we get that the matrix $T$ should be equal to $(k \cdot P + I - P) = (P \cdot (k - 1) + I)$.
 
-The next question is understand why $(P \cdot (k - 1) + I)$ represent the same linear transformation that $ADA^{-1}$ represents.
+The second step was justified because $T$ does nothing to the $(x - Px)$ part of $x$. This justification is not right at all.
 
-There is a problem in the previous approach, what's being done is scale the $v_1$ component in a basis that $v_1$ is part of.
+The linear map that scales $v_1$ by $k$, and leaves untouched the other vectors on that base, does not necessarily has to be the projection linear map on $v_1$, because it depends on the other vectors of the basis.
 
 That could be the projection linear transformation or not, to see why use other basis different than $v$ that still contains $v_1$, the linear transformation will be different, because it depends on the basis.
 
@@ -98,6 +104,8 @@ $T(v_i) = 0$
 For them to match we should have that $\langle v_1, v_i \rangle = 0$, which means that all of those vectors $v_i$ should be orthogonal to $v_1$.
 
 Basically $P$ decomposes the space into $\text{span}(v_1)$ and its orthogonal complement which is a space whose basis vectors are all orthogonal to $v_1$.
+
+The next question is understand why $(P \cdot (k - 1) + I)$ represent the same linear transformation that $ADA^{-1}$ represents.
 
 Again still is the question of why algebraically it should be the case that:
 
@@ -154,33 +162,42 @@ way1: $A_1 = AD_1 A^{-1}$, $A_2 = AD_2 A^{-1}$
 
 way2: $A_1 = (k_1-1)P_1 + I$, $A_2 = (k_2-1)P_2 + I$
 
-Question 1: By the previous conclusions, the linear map, or matrix of each of those transformations, can be obtained, individually.
+Question 1:
 
-The thing is why makes sense that multiplying them is the result of applying the two operations, one after the other, also see that it should be commutative because the order on which scaling is made, does not affect the other, but this is because scaling in one direction, don't change the others.
+By the previous conclusions, the linear map, or matrix of each of those transformations, can be obtained, individually.
+
+The thing is why makes sense that multiplying them is the result of applying the two operations, one after the other, also see that it should be commutative because the order on which scaling is made, does not affect the other.
+
+This is because scaling in one direction, don't change the others.
 
 This way it's easy to see that the multiplication does the job, because:
 
-$(A_1 A_2) = AD_1 A^{-1} \cdot AD_2 A^{-1}$
-        $= A D_1 D_2 A^{-1}$
+$$(A_1 A_2) = AD_1 A^{-1} \cdot AD_2 A^{-1}$$
+
+$$= A D_1 D_2 A^{-1}$$
 
 See that's precisely the effect and $D_1 D_2 = D_2 D_1$, they are diagonal matrices.
 
-$D_1 = I + (k_1 - 1)E_{11}$
-$D_2 = I + (k_2 - 1)E_{22}$
-$D_1 D_2 = I + (k_1 - 1)E_{11} + (k_2 - 1)E_{22}$
+$$D_1 = I + (k_1 - 1)E_{11}$$
 
-$A D_1 D_2 A^{-1}$
-$= A (I + (k_1 - 1)E_{11} + (k_2 - 1)E_{22}) A^{-1}$
-$= I + (k_1-1)A E_{11} A^{-1} + (k_2-1)A E_{22} A^{-1}$
+$$D_2 = I + (k_2 - 1)E_{22}$$
+
+$$D_1 D_2 = I + (k_1 - 1)E_{11} + (k_2 - 1)E_{22}$$
+
+$$A D_1 D_2 A^{-1}$$
+
+$$= A (I + (k_1 - 1)E_{11} + (k_2 - 1)E_{22}) A^{-1}$$
+
+$$= I + (k_1-1)A E_{11} A^{-1} + (k_2-1)A E_{22} A^{-1}$$
 
 The other way,
 
-$((k_1 - 1)P_1 + I) \cdot ((k_2 - 1)P_2 + I)$
+$$((k_1 - 1)P_1 + I) \cdot ((k_2 - 1)P_2 + I)$$
 
-$= (k_1 - 1)(k_2 - 1)P_1P_2 + I + (k_1-1)P_1 + (k_2-1)P_2$, 
+$$= (k_1 - 1)(k_2 - 1)P_1P_2 + I + (k_1-1)P_1 + (k_2-1)P_2,$$
 
 Because projecting in $P_2$, and then on $P_1$, is $0$, $P_2$ zeroes the coordinate that $P_1$ extracts later. End up with:
 
-$= I + (k_1 - 1)P_1 + (k_2 - 1)P_2$
+$$= I + (k_1 - 1)P_1 + (k_2 - 1)P_2$$
 
 And by the previous analysis we know that $(k_1 - 1)A E_{11} A^{-1}$ is $P_1$, so it all makes sense algebraically.

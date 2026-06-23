@@ -84,9 +84,12 @@ $T = \text{projection using } v_i \text{ basis.}$
 
 The projection linear transformation what does is:
 
+$i = 1$:
 $P(v_1) = v_1$
 
 $T(v_1) = v_1$
+
+$i \geq 2$:
 
 $P(v_i) = \frac{\langle v_1, v_i \rangle}{\langle v_1, v_1 \rangle} v_1$
 
@@ -102,7 +105,7 @@ $ADA^{-1}$ is equal to $(P \cdot (k - 1) + I)$
 
 $D = I + (k-1) \cdot E$
 
-$E$ is a matrix that has a $1$ on the $(1, 1)$ coordinate, and $0$ everywhere else. 
+$E$ is a matrix that has a $1$ on the $(1, 1)$ coordinate, and $0$ everywhere else.
 
 See that $E$ is the projection linear map on $e_1$, relative to the standard base $e$.
 
@@ -139,6 +142,45 @@ The thing is that $P$ here is the operator such that:
 
 Which does not have to match with the operator that does the projection of any vector on $v_1$, that operator is defined by:
 
-$$P(v_i) = \frac{\langle v_i, v_1 \rangle}{\|v_1\|} v_1$$
+$$P(v_i) = \frac{\langle v_i, v_1 \rangle}{\|v_1\|^2} v_1$$
 
-Again for them to match it should be the case that $\langle v_i, v_1 \rangle = 0$, if $i \neq j$.
+Again for them to match it should be the case that $\langle v_i, v_1 \rangle = 0$, if $i \neq 1$.
+
+## Multiple Scaling
+
+Now what if we want to scale by $k_1$ in the direction of $v_1$, and by $k_2$ in the direction of $v_2$. From the previous analysis:
+
+way1: $A_1 = AD_1 A^{-1}$, $A_2 = AD_2 A^{-1}$
+
+way2: $A_1 = (k_1-1)P_1 + I$, $A_2 = (k_2-1)P_2 + I$
+
+Question 1: By the previous conclusions, the linear map, or matrix of each of those transformations, can be obtained, individually.
+
+The thing is why makes sense that multiplying them is the result of applying the two operations, one after the other, also see that it should be commutative because the order on which scaling is made, does not affect the other, but this is because scaling in one direction, don't change the others.
+
+This way it's easy to see that the multiplication does the job, because:
+
+$(A_1 A_2) = AD_1 A^{-1} \cdot AD_2 A^{-1}$
+        $= A D_1 D_2 A^{-1}$
+
+See that's precisely the effect and $D_1 D_2 = D_2 D_1$, they are diagonal matrices.
+
+$D_1 = I + (k_1 - 1)E_{11}$
+$D_2 = I + (k_2 - 1)E_{22}$
+$D_1 D_2 = I + (k_1 - 1)E_{11} + (k_2 - 1)E_{22}$
+
+$A D_1 D_2 A^{-1}$
+$= A (I + (k_1 - 1)E_{11} + (k_2 - 1)E_{22}) A^{-1}$
+$= I + (k_1-1)A E_{11} A^{-1} + (k_2-1)A E_{22} A^{-1}$
+
+The other way,
+
+$((k_1 - 1)P_1 + I) \cdot ((k_2 - 1)P_2 + I)$
+
+$= (k_1 - 1)(k_2 - 1)P_1P_2 + I + (k_1-1)P_1 + (k_2-1)P_2$, 
+
+Because projecting in $P_2$, and then on $P_1$, is $0$, $P_2$ zeroes the coordinate that $P_1$ extracts later. End up with:
+
+$= I + (k_1 - 1)P_1 + (k_2 - 1)P_2$
+
+And by the previous analysis we know that $(k_1 - 1)A E_{11} A^{-1}$ is $P_1$, so it all makes sense algebraically.

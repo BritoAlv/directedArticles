@@ -79,6 +79,6 @@ See, those vectors are defined in terms of $\mathbf{e}_i$, if a vector, represen
 
 If there is a matrix $B = [\mathbf{r}_1 \ \mathbf{r}_2 \ \dots \ \mathbf{r}_d]$ where $\mathbf{r}_1 \ \mathbf{r}_2 \ \dots \ \mathbf{r}_d$ are defined by expressing the base $\mathbf{e}$ in terms of $\mathbf{v}$, multiply a vector represented in the $\mathbf{e}_i$ base, by this matrix, the result is how it looks in the $\mathbf{v}_i$ base. Same idea, but with different bases.
 
-Keeping this in mind, I can try to build the intuition here, see the reason that diagonalization is like $M D M^{-1}$,
+Keeping this in mind, I can try to build the intuition here, see the reason that diagonalization is like $M D M^{-1}$.
 
 $M^{-1} \mathbf{x}$ maps $\mathbf{x}$ from standard coordinates to eigen-vectors coordinates, and then $M$ takes it back to standard coordinates. $D$ only does scaling on the vectors expressed on the eigen-vectors base.

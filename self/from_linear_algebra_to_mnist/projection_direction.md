@@ -166,7 +166,9 @@ Question 1:
 
 By the previous conclusions, the linear map, or matrix of each of those transformations, can be obtained, individually.
 
-The thing is why makes sense that multiplying them is the result of applying the two operations, one after the other, also see that it should be commutative because the order on which scaling is made, does not affect the other.
+The thing is why makes sense that multiplying them is the result of applying the two operations, one after the other. 
+
+Also see that it should be commutative because the order on which scaling is made, does not affect the other.
 
 This is because scaling in one direction, don't change the others.
 

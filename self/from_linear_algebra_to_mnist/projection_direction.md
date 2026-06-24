@@ -69,7 +69,8 @@ One intuitive approach is write:
 
 $$\begin{align*}
 A(e_i) &= v_i \\
-B(v_i) &= e_i, B = A^{-1}
+B(v_i) &= e_i, B = A^{-1} \\
+D &= [e_1 \cdot k, e_2, e_3, \dots, e_d].
 \end{align*}$$
 
 The matrix we are looking for is:
@@ -87,9 +88,9 @@ P(v_1) &= v_1 \\
 P(v_i) &= 0, \ i \geq 2
 \end{align*}$$
 
-ie. Gives the $v_1$ part of a vector.
+In essence gives the $v_1$ part of a vector. Here a detail is that to define this linear map a base which includes $v_1$ is needed. To define a linear map is needed to specify what it does to all the vectors of a base.
 
-Set $T$ the matrix we are looking for:
+Let $T$ be the matrix we are looking for:
 
 $$\begin{align*}
 x &= Px + (x - Px) \\
@@ -101,54 +102,6 @@ From this we get that the matrix $T$ should be equal to $(k \cdot P + I - P) = (
 
 The second step was justified because $T$ does nothing to the $(x - Px)$ part of $x$.
 
-## Projection Matrix, versus Projection on Base.
-
-See that, the linear map that scales $v_1$ by $k$, and leaves untouched the other vectors on that base, does not necessarily has to be the projection linear map on $v_1$, because it depends on the other vectors of the basis.
-
-That could be the projection linear transformation or not, to see why use other basis different than $v$ that still contains $v_1$, the linear transformation will be different, because it depends on the basis.
-
-The projection linear transformation is only one,
-
-So what is needed to ensure on $\{v_1, v_2, \dots, v_d\}$ so the linear transformation we are describing  matches with the projection linear transformation.
-
-$$\begin{align*}
-P' &= \text{projection linear transformation} \\
-P &= \text{projection using } v_i \text{ basis.}
-\end{align*}$$
-
-See the differences:
-
-$i = 1$:
-
-$$\begin{align*}
-P'(v_1) &= v_1 \\
-P(v_1) &= v_1
-\end{align*}$$
-
-$i \geq 2$:
-
-$$\begin{align*}
-P'(v_i) &= \frac{\langle v_1, v_i \rangle}{\langle v_1, v_1 \rangle} v_1 \\
-P(v_i) &= 0
-\end{align*}$$
-
-For them to match we should have that $\langle v_1, v_i \rangle = 0$, which means that all of those vectors $v_i$ should be orthogonal to $v_1$.
-
-Basically $P'$ decomposes the space into $\text{span}(v_1)$ and its orthogonal complement which is a space whose basis vectors are all orthogonal to $v_1$.
-
-The thing is that $P$ here is the operator such that:
-
-$$\begin{align*}
-P(v_1) &= v_1 \\
-P(v_j) &= 0 \text{ for } j \geq 2
-\end{align*}$$
-
-Which does not have to match with the operator that does the projection of any vector on $v_1$, that operator is defined by:
-
-$$P(v_i) = \frac{\langle v_i, v_1 \rangle}{\|v_1\|^2} v_1$$
-
-Again for them to match it should be the case that $\langle v_i, v_1 \rangle = 0$, if $i \neq 1$.
-
 ## Making Sense of the Two Approaches.
 
 The next question is understand why $(P \cdot (k - 1) + I)$ represent the same linear transformation that $ADA^{-1}$ represents.
@@ -156,6 +109,8 @@ The next question is understand why $(P \cdot (k - 1) + I)$ represent the same l
 Again still is the question of why algebraically it should be the case that:
 
 $ADA^{-1}$ is equal to $(P \cdot (k - 1) + I)$
+
+$(P * (k-1) + I)x$
 
 See that:
 
@@ -185,17 +140,17 @@ When starting with $x$, two interpretations:
 
 So using all of this, we start with a vector $x = [x_1, x_2, \dots, x_d]$ on the $e$-basis.
 
-By (2), we get that $(A^{-1}x)$ is how this vector looks like in the $v$-basis $[c_1, c_2, \dots, c_d]$,
+By $(2)$, we get that $(A^{-1}x)$ is how this vector looks like in the $v$-basis $[c_1, c_2, \dots, c_d]$,
 
-The effect of $E$ is that take only its first coordinate, $\rightarrow [c_1, 0, 0, \dots, 0]$ and then by (3) $A (E (A^{-1} x))$ is how this vector looks like in the $e$-basis. See that $E \cdot A^{-1}x$ is of the form $[c_1, \ 0, \ 0, \ 0, \dots,  0]$, so $A \cdot (E \cdot A^{-1}x)$ is $v_1 \cdot c_1$, which is precisely what $P$ does to a vector on the standard base, so those two linear transformations are the same.
+The effect of $E$ is that take only its first coordinate, $\rightarrow [c_1, 0, 0, \dots, 0]$ and then by $(3)$ $A (E (A^{-1} x))$ is how this vector looks like in the $e$-basis. See that $E \cdot A^{-1}x$ is of the form $[c_1, \ 0, \ 0, \ 0, \dots,  0]$, so $A \cdot (E \cdot A^{-1}x)$ is $v_1 \cdot c_1$. That's what $P$ does.
 
 ## Multiple Scaling
 
 Now what if we want to scale by $k_1$ in the direction of $v_1$, and by $k_2$ in the direction of $v_2$. From the previous analysis:
 
-way1: $A_1 = AD_1 A^{-1}$, $A_2 = AD_2 A^{-1}$
+Way $1$: $A_1 = AD_1 A^{-1}$, $A_2 = AD_2 A^{-1}$
 
-way2: $A_1 = (k_1-1)P_1 + I$, $A_2 = (k_2-1)P_2 + I$
+Way $2$: $A_1 = (k_1-1)P_1 + I$, $A_2 = (k_2-1)P_2 + I$
 
 Question 1:
 
@@ -240,3 +195,51 @@ Because projecting in $P_2$, and then on $P_1$, is $0$, $P_2$ zeroes the coordin
 $$= I + (k_1 - 1)P_1 + (k_2 - 1)P_2$$
 
 And by the previous analysis we know that $(k_1 - 1)A E_{11} A^{-1}$ is $P_1$, so it all makes sense algebraically.
+
+## Projection Matrix, Versus Projection on Base.
+
+See that, the linear map that scales $v_1$ by $k$, and leaves untouched the other vectors on that base, does not necessarily has to be the projection linear map on $v_1$, because it depends on the other vectors of the basis.
+
+That could be the projection linear transformation or not, to see why use other basis different than $v$ that still contains $v_1$, the linear transformation will be different, because it depends on the basis.
+
+The orthogonal projection on $v_1$ is only one.
+
+So what is needed to ensure on $\{v_1, v_2, \dots, v_d\}$ the linear transformation we are describing matches with the projection linear transformation.
+
+$$\begin{align*}
+P' &= \text{projection linear transformation} \\
+P &= \text{projection using } v_i \text{ basis.}
+\end{align*}$$
+
+See the differences:
+
+$i = 1$:
+
+$$\begin{align*}
+P'(v_1) &= v_1 \\
+P(v_1) &= v_1
+\end{align*}$$
+
+$i \geq 2$:
+
+$$\begin{align*}
+P'(v_i) &= \frac{\langle v_1, v_i \rangle}{\langle v_1, v_1 \rangle} v_1 \\
+P(v_i) &= 0
+\end{align*}$$
+
+For them to match we should have that $\langle v_1, v_i \rangle = 0$, which means that all of those vectors $v_i$ should be orthogonal to $v_1$.
+
+Basically $P'$ decomposes the space into $\text{span}(v_1)$ and its orthogonal complement which is a space whose basis vectors are all orthogonal to $v_1$.
+
+The thing is that $P$ here is the operator such that:
+
+$$\begin{align*}
+P(v_1) &= v_1 \\
+P(v_j) &= 0 \text{ for } j \geq 2
+\end{align*}$$
+
+Which does not have to match with the operator that does the projection of any vector on $v_1$, that operator is defined by:
+
+$$P'(v_i) = \frac{\langle v_i, v_1 \rangle}{\|v_1\|^2} v_1$$
+
+Again for them to match it should be the case that $\langle v_i, v_1 \rangle = 0$, if $i \neq 1$.

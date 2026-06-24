@@ -73,7 +73,7 @@ B(v_i) &= e_i, B = A^{-1} \\
 D &= [e_1 \cdot k, e_2, e_3, \dots, e_d].
 \end{align*}$$
 
-The matrix we are looking for is:
+The matrix needed is:
 
 $$ADA^{-1}$$
 
@@ -90,7 +90,7 @@ P(v_i) &= 0, \ i \geq 2
 
 In essence gives the $v_1$ part of a vector. Here a detail is that to define this linear map a base which includes $v_1$ is needed. To define a linear map is needed to specify what it does to all the vectors of a base.
 
-Let $T$ be the matrix we are looking for:
+Let $T$ be the matrix that does the job:
 
 $$\begin{align*}
 x &= Px + (x - Px) \\
@@ -98,7 +98,7 @@ Tx &= k \cdot Px + (x - Px) \quad \text{(2)} \\
 Tx &= (k \cdot P + I - P)x
 \end{align*}$$
 
-From this we get that the matrix $T$ should be equal to $(k \cdot P + I - P) = (P \cdot (k - 1) + I)$.
+From this the matrix $T$ should be equal to $(k \cdot P + I - P) = (P \cdot (k - 1) + I)$.
 
 The second step was justified because $T$ does nothing to the $(x - Px)$ part of $x$.
 
@@ -138,15 +138,15 @@ When starting with $x$, two interpretations:
 3. if $y$ is a vector on the $v$-basis, then $Ay$ is how this vector looks like in the $e$-basis.
 4. if $y$ is a vector on the $e$-basis, then $Ay$ is how its twin in the $v$-basis looks like in the $e$-basis.
 
-So using all of this, we start with a vector $x = [x_1, x_2, \dots, x_d]$ on the $e$-basis.
+So using all of this: start with a vector $x = [x_1, x_2, \dots, x_d]$ on the $e$-basis.
 
-By $(2)$, we get that $(A^{-1}x)$ is how this vector looks like in the $v$-basis $[c_1, c_2, \dots, c_d]$,
+By $(2)$, $(A^{-1}x)$ is how this vector looks like in the $v$-basis $[c_1, c_2, \dots, c_d]$,
 
 The effect of $E$ is that take only its first coordinate, $\rightarrow [c_1, 0, 0, \dots, 0]$ and then by $(3)$ $A (E (A^{-1} x))$ is how this vector looks like in the $e$-basis. See that $E \cdot A^{-1}x$ is of the form $[c_1, \ 0, \ 0, \ 0, \dots,  0]$, so $A \cdot (E \cdot A^{-1}x)$ is $v_1 \cdot c_1$. That's what $P$ does.
 
 ## Multiple Scaling
 
-Now what if we want to scale by $k_1$ in the direction of $v_1$, and by $k_2$ in the direction of $v_2$. From the previous analysis:
+Now what if is needed to scale by $k_1$ in the direction of $v_1$, and by $k_2$ in the direction of $v_2$. From the previous analysis:
 
 Way $1$: $A_1 = AD_1 A^{-1}$, $A_2 = AD_2 A^{-1}$
 
@@ -194,7 +194,7 @@ Because projecting in $P_2$, and then on $P_1$, is $0$, $P_2$ zeroes the coordin
 
 $$= I + (k_1 - 1)P_1 + (k_2 - 1)P_2$$
 
-And by the previous analysis we know that $(k_1 - 1)A E_{11} A^{-1}$ is $P_1$, so it all makes sense algebraically.
+And by the previous analysis, $(k_1 - 1)A E_{11} A^{-1}$ is $P_1$, so it all makes sense algebraically.
 
 ## Projection Matrix, Versus Projection on Base.
 
@@ -204,7 +204,7 @@ That could be the projection linear transformation or not, to see why use other 
 
 The orthogonal projection on $v_1$ is only one.
 
-So what is needed to ensure on $\{v_1, v_2, \dots, v_d\}$ the linear transformation we are describing matches with the projection linear transformation.
+So what is needed to ensure on $\{v_1, v_2, \dots, v_d\}$ that the linear transformation $P$ matches with the orthogonal projection on $v_1$.
 
 $$\begin{align*}
 P' &= \text{projection linear transformation} \\
@@ -227,7 +227,7 @@ P'(v_i) &= \frac{\langle v_1, v_i \rangle}{\langle v_1, v_1 \rangle} v_1 \\
 P(v_i) &= 0
 \end{align*}$$
 
-For them to match we should have that $\langle v_1, v_i \rangle = 0$, which means that all of those vectors $v_i$ should be orthogonal to $v_1$.
+For them to match it should be that $\langle v_1, v_i \rangle = 0$, which means that all of those vectors $v_i$ should be orthogonal to $v_1$.
 
 Basically $P'$ decomposes the space into $\text{span}(v_1)$ and its orthogonal complement which is a space whose basis vectors are all orthogonal to $v_1$.
 

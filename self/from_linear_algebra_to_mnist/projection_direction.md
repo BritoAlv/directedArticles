@@ -26,6 +26,8 @@ Again, $A$ is a linear map whose columns indicates the effect of this linear map
 
 ## Scaling in a Specific Direction
 
+### Standard Base
+
 Now fix a vector $v$, for every vector $x$ there is another vector $\text{proj}_v x$ which is the projection of $x$ on $v$.
 
 Question: Given a scalar factor $k$, what's the vector $y$ such that its projection on $v$ is $k$ times the projection on $v$ of $x$.
@@ -52,7 +54,16 @@ Its matrix is $D = [e_1 \cdot k, e_2, e_3, \dots, e_d]$.
 
 That was easy to do because the $e_i$ is the standard base, what if not?
 
+## Custom Base
+
 Question: Let's say there is a base $\{v_1, v_2, \dots, v_d\}$, and a vector $x$, what's the matrix of the linear transformation that scales $x$ by a factor of $k$ in the $v_1$ direction?
+
+That means that:
+
+$$\begin{align*}
+T(v_1) &= k \cdot v_1 \\
+T(v_i) &= v_i, \ i \geq 2
+\end{align*}$$
 
 One intuitive approach is write:
 
@@ -69,7 +80,16 @@ Take the vectors from the standard base, to the $v$ base, apply the scaling ther
 
 There is other approach which is the following:
 
-Let $P$ be the projection matrix on the vector $v_1$, and $T$ the matrix we are looking for:
+Let $P$ be the linear map that:
+
+$$\begin{align*}
+P(v_1) &= v_1 \\
+P(v_i) &= 0, \ i \geq 2
+\end{align*}$$
+
+ie. Gives the $v_1$ part of a vector.
+
+Set $T$ the matrix we are looking for:
 
 $$\begin{align*}
 x &= Px + (x - Px) \\
@@ -79,46 +99,65 @@ Tx &= (k \cdot P + I - P)x
 
 From this we get that the matrix $T$ should be equal to $(k \cdot P + I - P) = (P \cdot (k - 1) + I)$.
 
-The second step was justified because $T$ does nothing to the $(x - Px)$ part of $x$. This justification is not right at all.
+The second step was justified because $T$ does nothing to the $(x - Px)$ part of $x$.
 
-The linear map that scales $v_1$ by $k$, and leaves untouched the other vectors on that base, does not necessarily has to be the projection linear map on $v_1$, because it depends on the other vectors of the basis.
+## Projection Matrix, versus Projection on Base.
+
+See that, the linear map that scales $v_1$ by $k$, and leaves untouched the other vectors on that base, does not necessarily has to be the projection linear map on $v_1$, because it depends on the other vectors of the basis.
 
 That could be the projection linear transformation or not, to see why use other basis different than $v$ that still contains $v_1$, the linear transformation will be different, because it depends on the basis.
 
 The projection linear transformation is only one,
 
-So what is needed to ensure on $\{v_1, v_2, \dots, v_d\}$ so the linear transformation we are describing matches with the projection linear transformation.
+So what is needed to ensure on $\{v_1, v_2, \dots, v_d\}$ so the linear transformation we are describing  matches with the projection linear transformation.
 
 $$\begin{align*}
-P &= \text{projection linear transformation} \\
-T &= \text{projection using } v_i \text{ basis.}
+P' &= \text{projection linear transformation} \\
+P &= \text{projection using } v_i \text{ basis.}
 \end{align*}$$
 
-The projection linear transformation what does is:
+See the differences:
 
 $i = 1$:
 
 $$\begin{align*}
-P(v_1) &= v_1 \\
-T(v_1) &= v_1
+P'(v_1) &= v_1 \\
+P(v_1) &= v_1
 \end{align*}$$
 
 $i \geq 2$:
 
 $$\begin{align*}
-P(v_i) &= \frac{\langle v_1, v_i \rangle}{\langle v_1, v_1 \rangle} v_1 \\
-T(v_i) &= 0
+P'(v_i) &= \frac{\langle v_1, v_i \rangle}{\langle v_1, v_1 \rangle} v_1 \\
+P(v_i) &= 0
 \end{align*}$$
 
 For them to match we should have that $\langle v_1, v_i \rangle = 0$, which means that all of those vectors $v_i$ should be orthogonal to $v_1$.
 
-Basically $P$ decomposes the space into $\text{span}(v_1)$ and its orthogonal complement which is a space whose basis vectors are all orthogonal to $v_1$.
+Basically $P'$ decomposes the space into $\text{span}(v_1)$ and its orthogonal complement which is a space whose basis vectors are all orthogonal to $v_1$.
+
+The thing is that $P$ here is the operator such that:
+
+$$\begin{align*}
+P(v_1) &= v_1 \\
+P(v_j) &= 0 \text{ for } j \geq 2
+\end{align*}$$
+
+Which does not have to match with the operator that does the projection of any vector on $v_1$, that operator is defined by:
+
+$$P(v_i) = \frac{\langle v_i, v_1 \rangle}{\|v_1\|^2} v_1$$
+
+Again for them to match it should be the case that $\langle v_i, v_1 \rangle = 0$, if $i \neq 1$.
+
+## Making Sense of the Two Approaches.
 
 The next question is understand why $(P \cdot (k - 1) + I)$ represent the same linear transformation that $ADA^{-1}$ represents.
 
 Again still is the question of why algebraically it should be the case that:
 
 $ADA^{-1}$ is equal to $(P \cdot (k - 1) + I)$
+
+See that:
 
 $$D = I + (k-1) \cdot E$$
 
@@ -148,19 +187,7 @@ So using all of this, we start with a vector $x = [x_1, x_2, \dots, x_d]$ on the
 
 By (2), we get that $(A^{-1}x)$ is how this vector looks like in the $v$-basis $[c_1, c_2, \dots, c_d]$,
 
-The effect of $E$ is that take only its first coordinate, $\rightarrow [c_1, 0, 0, \dots, 0]$ and then by (3) $A (E (A^{-1} x))$ is how this vector looks like in the $e$-basis. See that $E \cdot A^{-1}x$ is of the form $[c_1 \ 0 \ 0 \ 0, \dots,  0]$, so $A \cdot (E \cdot A^{-1}x)$ is $v_1 \cdot c_1$, which is precisely what $P$ does to a vector on the standard base, so those two linear transformations are the same.
-
-How in this proof was used the fact, that each vector $\{v_2, \dots, v_d\}$ has to be orthogonal to $v_1$.
-
-The thing is that $P$ here is the operator such that:
-$P(v_1) = v_1$
-$P(v_j) = 0$ for $j \geq 2$
-
-Which does not have to match with the operator that does the projection of any vector on $v_1$, that operator is defined by:
-
-$$P(v_i) = \frac{\langle v_i, v_1 \rangle}{\|v_1\|^2} v_1$$
-
-Again for them to match it should be the case that $\langle v_i, v_1 \rangle = 0$, if $i \neq 1$.
+The effect of $E$ is that take only its first coordinate, $\rightarrow [c_1, 0, 0, \dots, 0]$ and then by (3) $A (E (A^{-1} x))$ is how this vector looks like in the $e$-basis. See that $E \cdot A^{-1}x$ is of the form $[c_1, \ 0, \ 0, \ 0, \dots,  0]$, so $A \cdot (E \cdot A^{-1}x)$ is $v_1 \cdot c_1$, which is precisely what $P$ does to a vector on the standard base, so those two linear transformations are the same.
 
 ## Multiple Scaling
 

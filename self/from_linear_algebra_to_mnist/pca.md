@@ -14,7 +14,7 @@ See that the span of $M'Mv$ will be vectors of dimension at most $d$.
 
 Fix $M'$, from the least square problem is known that the quantity $\|v - M' (Mv)\|^2$ is minimized when $Mv$ is the vector such that $M'(Mv)$ is the projection of $v$ on the space spanned by $M'$.
 
-This means that $M'$ fixes $M$, from the QR ideas we can find $Q'$ such that $M' = Q'R$ and we get that $M$ should be $R^{-1}(Q')^T$, see that $M' M = Q' (Q')^T$, so we can use $Q'$ instead of $M$, and it has the plus that its columns are made of ortonormal vectors.
+This means that $M'$ fixes $M$, from the QR ideas is possible to find $Q'$ such that $M' = Q'R$ and $M$ should be $R^{-1}(Q')^T$, see that $M' M = Q' (Q')^T$, so its possible to use $Q'$ instead of $M$, and it has the plus that its columns are made of ortonormal vectors.
 
 Let's assume that $M'$ is made up by ortonormal vectors, i.e, $d$ ortonormal vectors, $p_1, p_2, \dots, p_d$, then $Mv$ should be:
 
@@ -39,7 +39,7 @@ $$\begin{align}
 
 And what to do from here?
 
-Using trace operator, it's possible to continue, using the fact that if $B$, $C$ are such that $BC$ and $CB$ are square matrices, then $\text{tr}(BC) = \text{tr}(CB)$.
+Using trace operator, it's possible to continue, using the fact that if $B$, $C$ are such that $BC$ and $CB$ are square matrices (so that $tr$ operator is defined), then $\text{tr}(BC) = \text{tr}(CB)$.
 
 With this, taking $B = v^T M'$, $C = Mv$
 
@@ -73,7 +73,7 @@ Now this is a sum over all the $v$'s:
 
 $$\sum_{v \in S} \text{tr}(M (v v^T) M')$$
 
-Because matrix multiplication is distributive on the left and on the right, and $\text{tr}$ operator is additive, ie, $\text{tr}(A + B) = \text{tr}(A) + \text{tr}(B)$, get that
+Because matrix multiplication is distributive on the left and on the right, and $\text{tr}$ operator is additive, i.e., $\text{tr}(A + B) = \text{tr}(A) + \text{tr}(B)$, get that:
 
 $$\sum_{v \in S} \text{tr}(M (v v^T) M') = \text{tr}(M (\sum_{v \in S} v v^T) M')$$
 

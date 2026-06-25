@@ -74,29 +74,3 @@ There is no difference mathematically between $e$ and $d$, one is used publicly 
 Can start with $P$ then $P^d \mod n$, then $P^{d^e} = P \mod n$, the thing is that there is no computationally feasible way of getting back to $P$, without knowing the other number.
 
 If I have $P^d$, to get $P$ I need $e$, and vice versa.
-
-## CIA Triad
-
-Confidentiality: means only the intended target can read the data.
-
-Integrity: means guaranteeing that the data received is exactly the data that was sent.
-
-Authenticity: means that's possible to verify the identity of the sender.
-
-Non-repudiation: means that the sender can't deny later having sent the message.
-
-Availability: means that the data can be accessed whenever is needed
-
-Authorization : means that determines what a user is allowed to do.
-
-## The Integrity Problem:
-
-When using public key cryptography, let's say I encrypt a message with the public key, and send it, when it's decrypted using the private key.
-
-How does the receiver, i.e. the owner of the private key knows that what was decrypted is actually what was sent?
-
-This problem is called integrity, in the sense that the direct encryption / decryption process does not guarantee that the decrypted data is what actually was sent, how deal with this?
-
-Encrypting with the public key only provides confidentiality, which means that only I can decrypt the message.
-
-

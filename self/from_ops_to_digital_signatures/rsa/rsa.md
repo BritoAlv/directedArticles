@@ -18,7 +18,7 @@ A function $f$ can take an integer $m$ and map it to $f(m)$, if this function $f
 
 The RSA system is a way to build this lock.
 
-## Idea
+## Idea:
 
 Given a modulus $n$, the plain data will be a number from the set $0, 1, \dots, n-1$, and the encrypted data will be another number on this set also.
 
@@ -32,7 +32,7 @@ Thanks to the algorithm of fast exponentiation, $P^e \mod n$ can be computed on 
 
 An implementation of the RSA system has to provide an injective mapping from the set of messages to $(0, n-1)$.
 
-## Security
+## Security:
 
 To decrypt a message $P$ having $(e, n, \text{and } C = P^e \mod n)$ one way is to iterate over all the integers $1, 2, \dots, n - 1$, this is not feasible if $n$ is big enough.
 
@@ -44,15 +44,15 @@ To achieve this $n$ is chosen in a specific way, $n = p * q$, where $p, q$ are p
 
 One question that remains to me is let's say I know $e$ and $n$, and $P^e$, why the only way to get $P$ back is to find the integer $d$, what shows that there isn't another trick, property, etc, that could get $P$ back. Seems like this is called the RSA problem. Because no one has come up with a way of hacking the RSA idea without brute-force.
 
-## The Factoring Problem
+## The Factoring Problem:
 
 It's believed that factoring a number does not have an efficient algorithm, there are algorithms but they aren't efficient in all the cases.
 
-### Smallest Prime Factor
+### Smallest Prime Factor:
 
 To factor $n$, iteration from $2$ to $\sqrt{N}$ can be done, checking if the number divides $n$, this is inefficient since if $N$ has $n$ bits, then $\sqrt{N}$ will have $N / 2$ bits. Of course if a $n$ has a small prime factor, then it will be found faster.
 
-## Finding the Exponents Pair.
+## Finding the Exponents Pair:
 
 In modular arithmetic given $x$ and modulo $m$, there exist $y$ such that $x * y = 1 \mod m$ if $(x, m) = 1$.
 
@@ -74,3 +74,29 @@ There is no difference mathematically between $e$ and $d$, one is used publicly 
 Can start with $P$ then $P^d \mod n$, then $P^{d^e} = P \mod n$, the thing is that there is no computationally feasible way of getting back to $P$, without knowing the other number.
 
 If I have $P^d$, to get $P$ I need $e$, and vice versa.
+
+## CIA Triad
+
+Confidentiality: means only the intended target can read the data.
+
+Integrity: means guaranteeing that the data received is exactly the data that was sent.
+
+Authenticity: means that's possible to verify the identity of the sender.
+
+Non-repudiation: means that the sender can't deny later having sent the message.
+
+Availability: means that the data can be accessed whenever is needed
+
+Authorization : means that determines what a user is allowed to do.
+
+## The Integrity Problem:
+
+When using public key cryptography, let's say I encrypt a message with the public key, and send it, when it's decrypted using the private key.
+
+How does the receiver, i.e. the owner of the private key knows that what was decrypted is actually what was sent?
+
+This problem is called integrity, in the sense that the direct encryption / decryption process does not guarantee that the decrypted data is what actually was sent, how deal with this?
+
+Encrypting with the public key only provides confidentiality, which means that only I can decrypt the message.
+
+

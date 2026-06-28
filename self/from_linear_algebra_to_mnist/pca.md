@@ -16,6 +16,10 @@ Fix $M'$, from the least square problem is known that the quantity $\|v - M' (Mv
 
 This means that $M'$ fixes $M$, from the $QR$ factorization is possible to find $Q'$ such that $M' = Q'R$ and $M$ should be $R^{-1}(Q')^T$, see that $M' M = Q' (Q')^T$, so its possible to use $Q'$ instead of $M$, and it has the plus that its columns are made of orthonormal vectors.
 
+The fact is that $M'M$ turns out to be the projection linear operator in the subspace spanned by $M'$, see that $M'$ fixes $M$ to ensure that, so I could replace $M'$ by any matrix that spans the same subspace.
+
+One explicit way of doing it is the $QR$ way, which describes how to obtain an orthonormal basis that spans the same subspace as $M'$.
+
 Let's assume that $M'$ is made up by orthonormal vectors. So that $M = (M')^T$.
 
 Due to the projection, the vectors $v$, $M'(Mv)$, $(v - M'Mv)$ form a triangle that's rectangle.
@@ -299,12 +303,61 @@ $p_i^T \cdot S \cdot p_i$
 
 $S$ is the covariance matrix of the features, i.e. $S[i, j] = \text{covariance}$ between feature $i$, and feature $j$.
 
-That generalizes to $\text{tr}(M^T S M)$, as the whole variance, and what's needed is compute the top largest values from the diagonal of that matrix. From here, is the same ideas from before.
+That generalizes to $\text{tr}(M^T S M)$, as the whole variance, and what's needed is compute the top largest values from the diagonal of that matrix. From here, is the same ideas from before. Observe that in the other approach what's being is done is minimize the reconstruction error, which by the Pythagoras theorem turns out to be the same as maximizing the variance retained. 
 
-More over the reason of using the variance as the criterion, is that is the equivalent to minimize the least square error, between the original vectors and the projected ones. The directions (axes) (features) in which project the vectors that best distribute the variance by concentrating it, is the one described before.
+More over the reason for using the variance as the criterion, is that is the equivalent to minimize the least square error, between the original vectors and the projected ones. The directions (axes) (features) in which project the vectors that best distribute the variance by concentrating it, is the one described before.
 
-There is a greedy algorithm for maximizing the variance, find the direction (axis, feature that maximizes the variance), $v_1$, now find the next direction that maximizes the variance but is also orthogonal to $v_1$, call it $v_2$, and so on. 
+See that the projection transformation preserves the $0$ as the mean of the data. As $0$ isn't changed on any linear transformation.
 
-How ensure that's orthogonal to $v_1$, subtract from each feature vector, the projection on this direction, that will leave the orthogonal complement of that subspace, then with the remaining vectors, do the same did before. 
+Why use the variance from a statistical pov?
 
-To find the direction that maximizes the variance, use the previous proof when $d = 1$. See because the eigenvectors form an orthogonal base, the greedy algorithm reach the global solution.
+If the problem is stated from the idea of minimizing the reconstruction error, then maximizing variance is what happens to be the goal due to Pythagoras, that is mathematically proven, the statistical reasons are metrics, here is one:
+
+1 - Fix a direction, if a value per vector is to be kept in this direction to discriminate between different vectors. Those values obtained should have as much variance as possible, because variance is the average of the squared distance of those points with the mean.
+
+One thing is what PCA optimizes, and other is what makes the result worth having.
+
+Picking the same direction $d$ times does not make sense, because that would make the resulting data with rank one, that direction, the directions have to be linearly independent. Orthogonality ensures that directions are linearly independent, and provides a nice way of compute the variance in the new axis (features). What PCA wants is find the best $d$ dimensional subspace that maximizes the captured variance. Orthogonality allows find a new direction that's linearly independent to the previous ones.
+
+A PCA result is useful precisely when the eigenvalues are unevenly distributed, some are larger, others are lowers, and ideally nothing in between.
+
+Data is observed through the lens of the PCA output which is the eigenvectors spectrum, which reports how the variance of the data is distributed in the eigenvectors spectrum. Data has that property or don't. PCA is not forcing that distribution. PCA reveals the fact. Whether dimensionality reduction is going to pay off is decided by the data actual structure, PCA is the instrument that reads that structure.
+
+With the raw data one can see the variance of each original feature, but not whether that variance is concentrated on some specific directions. PCA finds the directions that most concentrate the variance.
+
+Variance in a direction $\mathbf{w}$ is $\mathbf{w}^T S \mathbf{w}$ which depends on the diagonals of $S$ (the variance per feature), but also on the cross terms (covariances between each pair of features)
+
+$$\mathbf{w}^T S \mathbf{w} = \sum_i S_{ii} w_i^2 + \sum_{i \neq j} S_{ij} w_i w_j$$
+
+The eigenvector basis has the property that the variance across a direction $\mathbf{w}$ depends only on the variance of the features individually, not cross terms, since it's diagonal.
+
+$$\mathbf{w}^T D \mathbf{w} = \sum_i D_{ii} w_i^2$$
+
+Orthogonal directions that are eigenvectors make the data under that new coordinate system to have no pairwise linear relation between them. But more than that, a feature can't be predicted using data from the others using least squares fitting, under that metric is not possible.
+
+What means to my data to be represented with $0$ pairwise covariance features?
+
+That knowing a feature does not give a linear guess in the least squares fitting sense of the other features. Again this is a metric. So the eigenvector basis is the one that has this property. When the data is observed from those directions is possibly to rule out that is not possible to linearly predict data from one direction using data from other direction.
+
+
+## Greedy PCA
+
+There is a greedy algorithm for maximizing the variance, find the direction (axis, feature that maximizes the variance), $v_1$.
+
+Now find the next direction that maximizes the variance but is also orthogonal to $v_1$, call it $v_2$, and continue until $d$ directions has been found.
+
+How ensure that's orthogonal to $v_1$, subtract from each feature vector, the projection on this direction, that will leave the orthogonal complement of that subspace, then with the remaining vectors, do the same did before.
+
+Each vector $v_i$ will be mapped to $v_i - P_w v_i$
+
+Where $P_w$ is the projection matrix on $w$.
+
+See that is a linear transformation with matrix: $(I - P_w)$
+
+$$v \mapsto (I - P_w)v$$
+
+$$\langle w, (I - P_w)v \rangle$$
+$$= \langle w, v - P_w v \rangle$$
+$$= 0$$
+
+To find the direction that maximizes the variance, use the previous proof when $d=1$. The algorithm will choose the eigenvalue corresponding to the largest eigenvalue, then find the orthogonal complement of this subspace and so on, the eigenvectors form an orthogonal base, so in the complementary subspace, the next eigenvector will be found. The greedy finds the optimal solution to the problem.

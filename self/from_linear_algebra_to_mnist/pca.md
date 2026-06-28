@@ -131,7 +131,7 @@ That with the constraint that they sum up to $d$, assuming that $d_1 \geq d_2 \g
 $$\|r_1\| = \|r_2\| = \dots = \|r_d\| = 1$$
 $$\|r_{d+1}\| = \|r_{d+2}\| = \dots = \|r_n\| = 0$$
 
-So basically $W^T$ will be like $[H \ 0]$, where $H$ is a $d \times d$ matrix made by orthonormal vectors.
+So basically $W^T$ will be like $\left[ \begin{array}{c} H \\  0 \end{array} \right]$, where $H$ is a $d \times d$ matrix made by orthonormal vectors.
 
 Now:
 
@@ -139,7 +139,7 @@ $$W^T = R^T M^T = R^T M'$$
 
 $$M' = R W^T$$
 
-See that $R$ is the matrix whose columns are the eigenvectors of $S$. And because $W^T$ could be $[I \ 0]$, final result is interpret what is the result of $R W^T$.
+See that $R$ is the matrix whose columns are the eigenvectors of $S$. And because $W^T$ could be $\left[ \begin{array}{c} I \\  0 \end{array} \right]$, final result is interpret what is the result of $R W^T$.
 
 Divide $R$ in $R_1, R_2$.
 
@@ -153,7 +153,7 @@ Start with $x$, $d$ dimensional, in the $d$ compressed space. Compressed in the 
 
 $M' (M v)$, i.e. $Mv$ is an at most $d$ dimensional subspace. The inputs of $M'$ are those vectors.
 
-$W^T x = [Hx \mid 0]$ which does apply the $H$ linear map to $x$ and puts $(n-d)$, $0$'s at the end.
+$W^T x = \begin{bmatrix} Hx \\ 0 \end{bmatrix}$ which does apply the $H$ linear map to $x$ and puts $(n-d)$, $0$'s at the end.
 
 To make it $n$-dimensional, this $H$ linear map does not change the generated subspace.
 
@@ -302,3 +302,9 @@ $S$ is the covariance matrix of the features, i.e. $S[i, j] = \text{covariance}$
 That generalizes to $\text{tr}(M^T S M)$, as the whole variance, and what's needed is compute the top largest values from the diagonal of that matrix. From here, is the same ideas from before.
 
 More over the reason of using the variance as the criterion, is that is the equivalent to minimize the least square error, between the original vectors and the projected ones. The directions (axes) (features) in which project the vectors that best distribute the variance by concentrating it, is the one described before.
+
+There is a greedy algorithm for maximizing the variance, find the direction (axis, feature that maximizes the variance), $v_1$, now find the next direction that maximizes the variance but is also orthogonal to $v_1$, call it $v_2$, and so on. 
+
+How ensure that's orthogonal to $v_1$, subtract from each feature vector, the projection on this direction, that will leave the orthogonal complement of that subspace, then with the remaining vectors, do the same did before. 
+
+To find the direction that maximizes the variance, use the previous proof when $d = 1$. See because the eigenvectors form an orthogonal base, the greedy algorithm reach the global solution.

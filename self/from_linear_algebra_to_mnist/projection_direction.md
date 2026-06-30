@@ -20,9 +20,14 @@ This derivation is based on observing the algebraic values, but can't be interpr
 
 $$A(e_i) = v_i \cdot \frac{1}{\|v\|} v$$
 
-This can be obtained by triangle similarity, $A$ is formed by the column vectors $v_i \cdot \frac{1}{\|v\|} v$, which makes clear the previous result, and the fact that the rank of the matrix is $1$. ie all of its columns are multiples of $v$.
+This can be obtained by triangle similarity, $A$ is formed by the column vectors $v_i \cdot \frac{1}{\|v\|} v$, which makes clear the previous result, and the fact that the rank of the matrix is $1$, i.e. all of its columns are multiples of $v$.
 
 Again, $A$ is a linear map whose columns indicates the effect of this linear map on the basis vectors $e_i$.
+
+That can be generalized, the general question, given a set of vectors $v_1, v_2, ..., v_d$ as columns of a matrix M, what's the matrix that indicates the linear transformation of a vector $v$ to its projection on the space spanned by $M$?
+
+That matrix is called the pseudo-inverse of $M$.
+
 
 ## Scaling in a Specific Direction
 

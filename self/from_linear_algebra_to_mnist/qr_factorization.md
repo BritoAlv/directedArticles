@@ -2,7 +2,7 @@
 
 If there is a vector $v$ $n \times 1$, and a matrix $M$ $n \times d$.
 
-The thing is the following, how find among all the vectors of the form $Mw$, i.e. the span of $w$, the one $x$ that minimizes the following:
+The thing is the following, how find among all the vectors of the form $Mw$, i.e. the span of $M$, the one $x$ that minimizes the following:
 
 $$\|v - Mx\|^2$$
 
@@ -129,4 +129,6 @@ To find the vector $x$ it should be simply $Q^T b$, but this is from the $Q$ ort
 
 To convert them back to the $A$ basis, Is needed to multiply it by $R^{-1}$, so that $x = R^{-1} Q^T b$.
 
-See that $x = (R^{-1}Q^T) b$, and thus the projection matrix is $R^{-1}Q^T$.
+See that $x = (R^{-1}Q^T) b$, and thus the projection matrix is $R^{-1}Q^T$. In terms of M is (M^T M)^{-1}M^T.
+
+To see why it's enough with showing that: (M^T * M)x = M^Tb, That comes from the dot product derivation <b - Mx, Mx> = 0.

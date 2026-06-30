@@ -8,7 +8,7 @@ $A$ is made by the column vectors $\mathbf{v}_1, \mathbf{v}_2, \dots, \mathbf{v}
 
 $$A(\mathbf{e}_i) = \mathbf{v}_i$$
 
-So $A$ is a linear map that maps each of the standard basis vectors to other vectors $\mathbf{v}_i$ respectively. $A$ is the unique linear map that sends each basic vector $\mathbf{e}_j$ to $\mathbf{v}_j$.
+So $A$ is a linear map that maps each of the standard basis vectors to other vectors $\mathbf{v}_i$ respectively. $A$ is the unique linear map that sends each basis vector $\mathbf{e}_j$ to $\mathbf{v}_j$.
 
 From this definition if $\mathbf{x} = \begin{bmatrix} a \\ b \\ c \end{bmatrix}$, then $A\mathbf{x}$ is the vector in standard basis whose coordinates in the $\mathbf{v}$-basis are precisely $\begin{bmatrix} a \\ b \\ c \end{bmatrix}$.
 
@@ -39,7 +39,7 @@ If $\mathbf{x}$ is interpreted as a vector on the standard basis, what $A\mathbf
 
 The effect of $A\mathbf{x}$ on $\mathbf{x}$ is the following. If $\mathbf{x}$ is seen as a coordinate vector on the basis formed by the columns of $A$, thus $A\mathbf{x}$ is writing that vector on the standard base coordinate. 
 
-Its mapping coordinates from the base $A$ to the standard base. And why to the standard base, $\mathbf{e}_i$, because the column vectors of $A$: $v$ are written in terms of this base $\mathbf{e}$.
+It is mapping coordinates from the base $A$ to the standard base. And why to the standard base, $\mathbf{e}_i$, because the column vectors of $A$: $v$ are written in terms of this base $\mathbf{e}$.
 
 ## Inverse Of $A$?
 
@@ -60,7 +60,9 @@ $$\mathbf{x} = \begin{bmatrix} a \\ b \end{bmatrix}_{\mathbf{v}_i} \rightarrow B
 
 That means that if is known the representation of a vector in the $\mathbf{v}_i$ basis, then applying $B$ to it, will give the representation of it in the $\mathbf{e}_i$ basis.
 
-Is not known what $B$ does to the basis vectors, ie, $B(\mathbf{e}_i) = ?$, let's say that $B(\mathbf{e}_i) = \mathbf{r}_i$, then $B = [\mathbf{r}_1 \ \mathbf{r}_2 \ \dots \ \mathbf{r}_d]$, $R = \{\mathbf{r}_1, \mathbf{r}_2, \dots, \mathbf{r}_d\}$ is another basis.
+Is not known what $B$ does to the basis vectors, i.e., $B(\mathbf{e}_i) = ?$
+
+Let's say that $B(\mathbf{e}_i) = \mathbf{r}_i$, then $B = [\mathbf{r}_1 \ \mathbf{r}_2 \ \dots \ \mathbf{r}_d]$, $R = \{\mathbf{r}_1, \mathbf{r}_2, \dots, \mathbf{r}_d\}$ is another basis.
 
 Can I compute $\mathbf{r}_i$ in terms of the base $\mathbf{v}$?
 
@@ -81,4 +83,4 @@ If there is a matrix $B = [\mathbf{r}_1 \ \mathbf{r}_2 \ \dots \ \mathbf{r}_d]$ 
 
 Keeping this in mind, I can try to build the intuition here, see the reason that diagonalization is like $M D M^{-1}$.
 
-$M^{-1} \mathbf{x}$ maps $\mathbf{x}$ from standard coordinates to eigen-vectors coordinates, and then $M$ takes it back to standard coordinates. $D$ only does scaling on the vectors expressed on the eigen-vectors base.
+$M^{-1} \mathbf{x}$ maps $\mathbf{x}$ from standard coordinates to eigen-vectors coordinates, and then $M$ takes it back to standard coordinates. $D$ only do scaling on the vectors expressed on the eigen-vectors base.

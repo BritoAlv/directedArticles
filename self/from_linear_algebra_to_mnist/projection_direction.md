@@ -1,6 +1,6 @@
 ## Projection Matrix
 
-Question: Let's say, in euclidean space, $d$ dimensions. Fix a vector $v$, the projection of any vector $x$ on $v$ is a linear transformation, so what's its matrix?
+Question: Let's say, in Euclidean space, $d$ dimensions. Fix a vector $v$, the projection of any vector $x$ on $v$ is a linear transformation, so what's its matrix?
 
 $$v = m_1 e_1 + \dots + m_d e_d$$
 
@@ -22,7 +22,7 @@ $$A(e_i) = v_i \cdot \frac{1}{\|v\|} v$$
 
 This can be obtained by triangle similarity, $A$ is formed by the column vectors $v_i \cdot \frac{1}{\|v\|} v$, which makes clear the previous result, and the fact that the rank of the matrix is $1$, i.e. all of its columns are multiples of $v$.
 
-Again, $A$ is a linear map whose columns indicates the effect of this linear map on the basis vectors $e_i$.
+Again, $A$ is a linear map whose columns indicate the effect of this linear map on the basis vectors $e_i$.
 
 That can be generalized, the general question, given a set of vectors $v_1, v_2, ..., v_d$ as columns of a matrix M, what's the matrix that indicates the linear transformation of a vector $v$ to its projection on the space spanned by $M$?
 
@@ -70,7 +70,7 @@ T(v_1) &= k \cdot v_1 \\
 T(v_i) &= v_i, \ i \geq 2
 \end{align*}$$
 
-One intuitive approach is write:
+One intuitive approach is writing:
 
 $$\begin{align*}
 A(e_i) &= v_i \\
@@ -109,7 +109,7 @@ The second step was justified because $T$ does nothing to the $(x - Px)$ part of
 
 ## Making Sense of the Two Approaches.
 
-The next question is understand why $(P \cdot (k - 1) + I)$ represent the same linear transformation that $ADA^{-1}$ represents.
+The next question is why $(P \cdot (k - 1) + I)$ represent the same linear transformation that $ADA^{-1}$ represents.
 
 Again still is the question of why algebraically it should be the case that:
 
@@ -138,10 +138,10 @@ But this is linear transformations issue, change of basis issue. Here it goes.
 
 When starting with $x$, two interpretations:
 
-1. if $x$ is a vector on the $v$-basis, then $A^{-1}x$ is how its twin in the $e$-basis, looks like in the $v$-basis.
-2. if $x$ is a vector on the $e$-basis then $A^{-1}x$ is how this vector looks like in the $v$-basis.
-3. if $y$ is a vector on the $v$-basis, then $Ay$ is how this vector looks like in the $e$-basis.
-4. if $y$ is a vector on the $e$-basis, then $Ay$ is how its twin in the $v$-basis looks like in the $e$-basis.
+1. If $x$ is a vector on the $v$-basis, then $A^{-1}x$ is how its twin in the $e$-basis, looks like in the $v$-basis.
+2. If $x$ is a vector on the $e$-basis then $A^{-1}x$ is how this vector looks like in the $v$-basis.
+3. If $y$ is a vector on the $v$-basis, then $Ay$ is how this vector looks like in the $e$-basis.
+4. If $y$ is a vector on the $e$-basis, then $Ay$ is how its twin in the $v$-basis looks like in the $e$-basis.
 
 So using all of this: start with a vector $x = [x_1, x_2, \dots, x_d]$ on the $e$-basis.
 
@@ -203,9 +203,9 @@ And by the previous analysis, $(k_1 - 1)A E_{11} A^{-1}$ is $P_1$, so it all mak
 
 ## Projection Matrix, Versus Projection on Base.
 
-See that, the linear map that scales $v_1$ by $k$, and leaves untouched the other vectors on that base, does not necessarily has to be the projection linear map on $v_1$, because it depends on the other vectors of the basis.
+See that, the linear map that scales $v_1$ by $k$, and leaves untouched the other vectors on that base, does not necessarily have to be the projection linear map on $v_1$, because it depends on the other vectors of the basis.
 
-That could be the projection linear transformation or not, to see why use other basis different than $v$ that still contains $v_1$, the linear transformation will be different, because it depends on the basis.
+That could be the projection linear transformation or not. To see why, use other basis different of $v$ that still contains $v_1$, the linear transformation will be different, because it depends on the other vector of the basis.
 
 The orthogonal projection on $v_1$ is only one.
 

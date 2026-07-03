@@ -85,7 +85,7 @@ Keeping this in mind, I can try to build the intuition here, see the reason that
 
 $M^{-1} \mathbf{x}$ maps $\mathbf{x}$ from standard coordinates to eigen-vectors coordinates, and then $M$ takes it back to standard coordinates. $D$ only do scaling on the vectors expressed on the eigen-vectors base.
 
-## A = BC
+## $A = BC$
 
 What conclusions can be obtained from a relationship like $A = BC$?
 

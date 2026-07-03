@@ -12,7 +12,7 @@ $b$ is $n \times 1$, $M$ is $n \times d$, $M^T$ is $d \times n$, $x$ is $d \time
 
 To solve that issue one necessary condition is check that $\langle b - Mx, Mx \rangle =0$, but this is not enough, since the projection vector should be orthogonal to all the vectors on the subspace spanned by $M$, not one of them, $Mx$ in this case. 
 
-Let $m_1, m_2, ..., m_d$ the column vectors of $M$, the enough condition is that the $d$ equations, $\langle b - Mx, m_i \rangle =0$ are satisfied by some $x$.
+Let $m_1, m_2, ..., m_d$ the column vectors of $M$, the enough condition is that the $d$ equations, $\langle b - Mx, m_i \rangle =0$ are satisfied by $x$.
 
 Which can be written in matrix form as $(b - Mx)^T M = 0$, or equivalently $M^T (b - Mx) = 0$, from this is obtained that:
 
@@ -34,7 +34,3 @@ Because columns of $M$ are linearly independent the only solution to that equati
 2. If column vectors are linearly dependent, then there are many $x$ that satisfy the equation and so that $Mx$ is the projection of $b$ in the subspace spanned by $x$.
 
 From the previous analysis, assuming linearly independent columns if $M = QR^{-1}$, then $x = RQ^Tb$, and from this analysis we get other expression for $x$ written only in terms of $M$.
-
-It should be the case that:
-
-$$(M^T M)^{-1} M^T = R Q^T$$

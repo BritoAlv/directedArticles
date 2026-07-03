@@ -84,3 +84,15 @@ If there is a matrix $B = [\mathbf{r}_1 \ \mathbf{r}_2 \ \dots \ \mathbf{r}_d]$ 
 Keeping this in mind, I can try to build the intuition here, see the reason that diagonalization is like $M D M^{-1}$.
 
 $M^{-1} \mathbf{x}$ maps $\mathbf{x}$ from standard coordinates to eigen-vectors coordinates, and then $M$ takes it back to standard coordinates. $D$ only do scaling on the vectors expressed on the eigen-vectors base.
+
+## A = BC
+
+What conclusions can be obtained from a relationship like $A = BC$?
+
+$Ax$ is a vector in standard coordinates whose coefficients in the $A$ coordinates are given by $x$, $C$ is packaging how express $A$ column vectors in terms of $B$ vectors. 
+
+Equivalently column vectors of $A$ can be written as linear combination of vectors on $B$, and the coefficients are packaged on $C$. 
+
+The span of $A$ is a subset of the span of $B$, and to be the same the condition is that $C$ can be inverted. That would be the matrix that packages the inverse process, writing the column vectors of $B$ in terms of the column vectors of $A$. 
+
+See that $B(Cx)$, $Cx$ are the coefficients of the vector $B(Cx) = Ax$ on the $B$ basis. There are two representations of the common vector $v = Ax = B(Cx)$, using the column vectors of $A$, and other using the column vectors of $B$. 

@@ -2,7 +2,9 @@
 
 In the least square problem the goal is finding the vector $x$ such that $\|v - Q R^{-1}x\|^2$ is minimized. 
 
-$v$ is a $n * 1$ vector. $Q$ is an $n * d$ matrix whose columns $q_1, ..., q_d$ are orthonormal basis vectors. $QR^{-1} = M$. $M$ is $n* d$.
+$v$ is a $n * 1$ vector. $Q$ is an $n * d$ matrix whose columns $q_1, ..., q_d$ are orthonormal basis vectors. $QR^{-1} = M$.
+
+ $M$ is $n* d$.
 
 The projection of $v$ on each of the $q_i$ vectors is:
 

@@ -1,30 +1,55 @@
 ## Problem It Solves:
 
-There is a list of vectors $S = \{v_1, v_2, \dots, v_N\}$ of a $n$-dimensional space $A$. The question is: Find a pair of matrices $M = d \times n$, $M' = n \times d$, that minimizes the following sum:
+There is a list of vectors $S = \{v_1, v_2, \dots, v_N\}$ of a $n$-dimensional space $A$. The question is: 
+
+Find a pair of matrices $M = d \times n$, $M' = n \times d$, that minimizes the following sum:
 
 $$\sum_{v \in S} \|v - M' M v\|^2$$
 
-Here is the catch, because $n > d$, it is not possible to obtain $(M' M v = v)$, so the question is: Find the pair of matrices $M'$, $M$ that minimize that sum.
+Here is the catch, because $n > d$, it is not possible to obtain $(M' M v = v)$, so the question is: 
+
+Find the pair of matrices $M'$, $M$ that minimize that sum.
 
 See that the span of $M'Mv$ will be vectors of dimension at most $d$.
 
 ## How to Solve It:
 
+### Projection Linear Operator
+
 Fix $M'$, from the least square problem is known that the quantity $\|v - M' (Mv)\|^2$ is minimized when $Mv$ is the vector such that $M'(Mv)$ is the projection of $v$ on the space spanned by $M'$.
 
-This means that $M'$ fixes $M$, from the $QR$ factorization is possible to find $Q'$ such that $M' = Q'R$ and $M$ should be $R^{-1}(Q')^T$, see that $M' M = Q' (Q')^T$, so its possible to use $Q'$ instead of $M$, and it has the plus that its columns are made of orthonormal vectors.
-
-The fact is that $M'M$ turns out to be the projection linear operator in the subspace spanned by $M'$, see that $M'$ fixes $M$ to ensure that, so I could replace $M'$ by any matrix that spans the same subspace.
-
-One explicit way of doing it is the $QR$ way, which describes how to obtain an orthonormal basis that spans the same subspace as $M'$.
-
-Let's assume that $M'$ is made up by orthonormal vectors. So that $M = (M')^T$.
+The fact is that $M'M$ has to be the projection linear operator in the subspace spanned by $M'$, see that $M'$ fixes $M$ to ensure that, so I could replace $M'$ by any matrix whose column vectors span the same subspace that $M'$. The projection linear operator is determined by the subspace not by the basis used to span that space.
 
 Due to the projection, the vectors $v$, $M'(Mv)$, $(v - M'Mv)$ form a triangle that's rectangle.
 
 $$\|v\|^2 = \|M'Mv\|^2 + \|(v - M'Mv)\|^2$$
 
 Because the sum $\|v\|^2$ is fixed, minimizing the original sum is equivalent to maximize the sum of $\|M'Mv\|^2$, and at this point what can be done.
+
+If the columns of $M'$ are linearly dependent, let's say $d_1 < d$ is the rank of $M'$, then because what matters is the subspace spanned by $M'$ I can find a base made by $d_1$ linearly independent vectors whose remaining $d - d_1$ components are $0$. This is equivalent to solve the problem for $d_1$ instead of $d$.
+
+For example, let's say $n = 3$, $d = 2$, and $M' = \begin{pmatrix}
+  1 & 2  \\
+  1 & 2 \\
+\end{pmatrix}$, that subspace is the same as the one spanned by $M' = \begin{pmatrix}
+  1 & 0  \\
+  1 & 0 \\
+\end{pmatrix}$, if using the latter, observe that the last $1 = 2 - 1$ coordinates, don't contribute to the sum that's being maximized $\|M'Mv\|^2$ because they are $0$. 
+
+See that what's being summed per vector is its norm, which is the square of each coordinate, so if the last $(d - d_1)$ coordinates are $0$, that's the worst case, so having rank $d$ will be always better than something smaller. From this point assume that columns of $M'$ are linearly independent.
+
+Always can be found an orthonormal basis that spans the same subspace as the column vectors of $M'$
+
+### Optional
+
+But because those are linearly independent, I can use the $QR$ factorization in particular.
+
+From the $QR$ factorization is possible to find $Q'$ such that: $M' = Q'R$ and $M$ should be $R^{-1}(Q')^T$, see that $M' M = Q' (Q')^T$, so it is possible to use $Q'$ instead of $M$, and it has the plus that its columns are made of orthonormal vectors.
+
+
+### Variance Computation
+
+Let's assume that $M'$ is made up by orthonormal vectors. So that $M = (M')^T$.
 
 The idea is that because $M M' = I_d$, and $\|M'Mv\|^2 = \langle M'Mv, M'Mv \rangle$, get that:
 
@@ -87,6 +112,10 @@ M' &= n \times d
 
 $MSM'$ is a $d \times d$ matrix, from this point how to go on?
 
+### Covariance Matrix.
+
+This $S$ matrix has a statistical interpretation, $S[i, j]$ is the covariance between feature $i$ and feature $j$ (assuming features were centered at $0$, and scaled by $\frac{1}{N}$). 
+
 $S$ is a real symmetric matrix, the spectral theorem allows ensuring that it has an orthogonal diagonalization. $S$ can be diagonalized, so let $S = RDR^{-1}$. $R$ is made by orthonormal columns, which is equivalent to $R^{-1} = R^T$.
 
 If $W = (MR)$, then $MSM' = WDW^T$, because $D$ is a diagonal matrix, let $w_1, w_2, \dots, w_d$ the vector columns of $W^T$, and $d_1, d_2, \dots, d_n$ the diagonal values of $D$ then:
@@ -101,7 +130,7 @@ $$\sum_{j=1}^n d_j \left(\sum_{i=1}^d (w_{ij})^2\right) = \sum_{j=1}^n d_j \|r_j
 
 $R$ is formed by orthonormal column vectors, see that the columns of $W^T = (MR)^T$, will be formed by orthonormal vectors, to see why it's enough to check that $W W^T = M R (MR)^T  = I_d$.
 
-The reason is that if a matrix $A_{n \times d}$ is such that:
+The reason is that if a matrix $A_{d \times n}$ is such that:
 
 $A A^T = I_d$
 

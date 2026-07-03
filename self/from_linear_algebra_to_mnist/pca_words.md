@@ -8,17 +8,30 @@ $x = (x_1, x_2, \dots, x_m)$
 
 Features are weight, height, etc. Having too much features may be a problem, so you set the task of find a way of represent the data using less features. Keep in mind that each feature is an axis on the coordinate system. From the features you have, you need a criterion that allows you to say I will keep this feature, and I will discard this one.
 
-One criterion that can be used per feature is the variance of that feature, this means the average of the square differences between the feature value and the feature average. If before doing this to each feature value is subtracted the mean of the feature, i.e. the data is centered at $0$. What we are computing is the average of the sum of the squares of the projection of each vector onto that feature axis. I.e. the sum of the squares of the coordinates of the vector on that axis. Observe that the $\frac{1}{N}$ is constant across all the features.
+One criterion that can be used per feature is the variance of that feature, this means the average of the square differences between the feature value and the feature average. If before doing this to each feature value is subtracted the mean of the feature, i.e. the data is centered at $0$. What we are computing is the average of the sum of the squares of the projection of each vector onto that feature axis. Equivalently, the sum of the squares of the coordinates of the vector on that axis. Observe that the $\frac{1}{N}$ is constant across all the features.
 
 So what one do is the following, compute the variances per feature, to obtain $m$ values and keep the features corresponding to the top $d$ values.
 
 One issue with this naive approach is that the variances per feature could be roughly equal say $30, 30, 30$. So this approach is useless, what could be useful would be that the variances would be like $50, 60, 1$. See here is a good choice to discard the third axis, the other two contains most of the variance of the data.
 
-Now the question is? Is there a linear transformation that can be applied to the axis (features) so that under the pov of the new axis, the variances are better distributed?
+The question is: 
 
-This linear transformation can't change the shape of the data, so that the variance is preserved, so it should be an orthogonal transformation, those only do rotation and reflection to the features (axis).
+There are features (axis) and observation of them, among all the linear transformation that preserve the total variance of the data. Is there any that distributes the total variance per feature in a way we hope (some features have small variance compared to others)?
 
-The problem comes to the following, fix a $d$, and ask the question, from all the orthogonal linear transformation, what's the one that maximizes the sum of the variances of its top $d$ features.
+Preserving the total variance is for being able to compare two different distributions, they should have the same total.
+
+First, let's try to find what are the linear maps that preserve the variance?
+
+If $A$ is a linear map, then transformed vectors will be $Ax$, and the total variance of the data is: 
+
+
+
+
+This linear transformation can't change the shape of the data, so that the total variance is preserved, so it should be an orthogonal transformation, those only do rotation and reflection to the features (axis).
+
+The problem comes to the following, fix a $d$, and ask: 
+
+From all the orthogonal linear transformation, what's the one that maximizes the sum of the variances of its top $d$ features.
 
 With linear algebra is proved some facts:
 
@@ -26,15 +39,13 @@ Compute the matrix that contains the covariance between each pair of features, t
 
 The basis made by the eigenvectors is orthogonal and is the linear transformation we are looking for.
 
-It holds that the variance of each feature is the corresponding eigenvalue and the sum of the variance made by the top $d$ features is the biggest variance that can be achieved with any linear transformation orthogonal.
+It holds that the variance of each transformed feature is the corresponding eigenvalue and the sum of the variance made by the top $d$ features is the biggest variance that can be achieved with any linear transformation.
 
 Why that matrix solves the problem,
 
 Compute the variance of each feature after is transformed by an orthogonal transformation.
 
-$M \cdot v$
-
-$M$ is the orthogonal transformation, $(n \times n)$
+$M \cdot v$, $M$ is the orthogonal transformation, $(n \times n)$
 
 $v$ is each vector $(1 \times n)$
 
@@ -53,7 +64,11 @@ $p_i^T \cdot S \cdot p_i$
 
 $S$ is the covariance matrix of the features, i.e. $S[i, j] = \text{covariance}$ between feature $i$, and feature $j$.
 
-That generalizes to $\text{tr}(M^T S M)$, as the whole variance, and what's needed is compute the top largest values from the diagonal of that matrix. From here, is the same ideas from before. Observe that in the other approach what's being is done is minimize the reconstruction error, which by the Pythagoras theorem turns out to be the same as maximizing the variance retained. 
+When doing $M^T S M$ in each diagonal of this matrix is the term $p^T_i S p_i$. The total variance is thus $\text{tr}(M^T S M)$.
+
+Remember the goal is to find the $M$ that maximizes the sum of the top largest values from the diagonal of that matrix.
+
+Observe that minimize the reconstruction error, by the Pythagoras theorem turns out to be the same as maximizing the variance retained. 
 
 More over the reason for using the variance as the criterion, is that is the equivalent to minimize the least square error, between the original vectors and the projected ones. The directions (axes) (features) in which project the vectors that best distribute the variance by concentrating it, is the one described before.
 
@@ -63,7 +78,7 @@ Why use the variance from a statistical pov?
 
 If the problem is stated from the idea of minimizing the reconstruction error, then maximizing variance is what happens to be the goal due to Pythagoras, that is mathematically proven, the statistical reasons are metrics, here is one:
 
-1 - Fix a direction, if a value per vector is to be kept in this direction to discriminate between different vectors. Those values obtained should have as much variance as possible, because variance is the average of the squared distance of those points with the mean.
+1. Fix a direction, if a value per vector is to be kept in this direction to discriminate between different vectors. Those values obtained should have as much variance as possible, because variance is the average of the squared distance of those points with the mean.
 
 One thing is what PCA optimizes, and other is what makes the result worth having.
 
@@ -71,7 +86,7 @@ Picking the same direction $d$ times does not make sense, because that would mak
 
 A PCA result is useful precisely when the eigenvalues are unevenly distributed, some are larger, others are lowers, and ideally nothing in between.
 
-Data is observed through the lens of the PCA output which is the eigenvectors spectrum, which reports how the variance of the data is distributed in the eigenvectors spectrum. Data has that property or don't. PCA is not forcing that distribution. PCA reveals the fact. Whether dimensionality reduction is going to pay off is decided by the data actual structure, PCA is the instrument that reads that structure.
+Data is observed through the lens of the PCA output which is the eigenvectors spectrum, which reports how the variance of the data is distributed in the eigenvectors spectrum. Data has that property or don't. PCA is not forcing that distribution. PCA reveals the fact. Whether dimensionality reduction is going to pay off is decided by the data structure, PCA is the instrument that reads that structure.
 
 With the raw data one can see the variance of each original feature, but not whether that variance is concentrated on some specific directions. PCA finds the directions that most concentrate the variance.
 

@@ -13,6 +13,10 @@ The idea is that once is known a set of orthonormal vectors, to add a new one:
 
 Take $m$, linear independent to the vectors on the set, subtract from $m$ its projection in the subspace formed by the orthonormal vectors, and normalize the resulting vector.
 
+A fact here, if this new vector that is going to be added to the set, is a linear combination of the vectors in the set. 
+
+That means it lies on the subspace those vectors span, which means that its projection is the same vector, and thus the resulting vector is $0$, which breaks the algorithm. That's why the vectors have to be linearly independent or else the algorithm will break.
+
 After doing that, a matrix $Q$ $n \times d$ is obtained, i.e. $d$ vectors that are orthonormal. 
 
 How to recover $m_1$ from $q_1$, multiply $q_1$ by $\|m_1\|$,

@@ -203,7 +203,7 @@ And by the previous analysis, $(k_1 - 1)A E_{11} A^{-1}$ is $P_1$, so it all mak
 
 ## Projection Matrix, Versus Projection on Base.
 
-See that, the linear map that scales $v_1$ by $k$, and leaves untouched the other vectors on that base, does not necessarily have to be the projection linear map on $v_1$, because it depends on the other vectors of the basis.
+See that, the linear map that scales $v_1$ by $k$, and leaves untouched the other vectors on that base, does not necessarily has to be the projection linear map on $v_1$, because it depends on the other vectors of the basis.
 
 That could be the projection linear transformation or not. To see why, use other basis different of $v$ that still contains $v_1$, the linear transformation will be different, because it depends on the other vector of the basis.
 
@@ -243,7 +243,7 @@ P(v_1) &= v_1 \\
 P(v_j) &= 0 \text{ for } j \geq 2
 \end{align*}$$
 
-Which does not have to match with the operator that does the projection of any vector on $v_1$, that operator is defined by:
+Which does not has to match with the operator that does the projection of any vector on $v_1$, that operator is defined by:
 
 $$P'(v_i) = \frac{\langle v_i, v_1 \rangle}{\|v_1\|^2} v_1$$
 

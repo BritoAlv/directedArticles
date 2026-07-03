@@ -1,6 +1,6 @@
 ## Finding the Projection Matrix in a Non-Orthogonal Basis
 
-See that the least square problem is about a fixed subspace indicated by a matrix $M$, column vectors of $M$ are linearly independent, find the vector $x$, such that:
+See that the least square problem is about a fixed subspace indicated by a matrix $M$, find the vector $x$, such that:
 
 $$\|b - Mx\|^2$$
 
@@ -18,9 +18,7 @@ Which can be written in matrix form as $(b - Mx)^T M = 0$, or equivalently $M^T 
 
 $$M^T b = M^T M x$$
 
-If somehow can be proven that $M^T M$ has inverse then the solution is $x = (M^T M)^{-1} M^T b$. 
-
-To show that the inverse always exist:
+1. $M$ is made by linearly independent column vectors, then:
 
 $$
 \begin{align}
@@ -31,9 +29,11 @@ x^T M^T M x &= 0 \\
 \end{align}
 $$
 
-Because columns of $M$ are linearly independent the only solution to that equation is $x = 0$.
+Because columns of $M$ are linearly independent the only solution to that equation is $x = 0$. The solution is $x = (M^T M)^{-1} M^T b$. 
 
-From the previous analysis if $M = QR^{-1}$, then $x = RQ^Tb$, and from this analysis we get other expression for $x$ written only in terms of $M$.
+2. If column vectors are linearly dependent, then there are many $x$ that satisfy the equation and so that $Mx$ is the projection of $b$ in the subspace spanned by $x$.
+
+From the previous analysis, assuming linearly independent columns if $M = QR^{-1}$, then $x = RQ^Tb$, and from this analysis we get other expression for $x$ written only in terms of $M$.
 
 It should be the case that:
 

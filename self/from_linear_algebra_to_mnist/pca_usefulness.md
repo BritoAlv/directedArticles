@@ -8,7 +8,7 @@ Data is observed through the lens of the PCA output which is the eigenvectors sp
 
 Data has that property or don't. PCA is not forcing that distribution. PCA reveals the fact. Whether dimensionality reduction is going to pay off is decided by the data structure, PCA is the instrument that reads that structure.
 
-With the raw data one can see the variance of each original feature, but not whether that variance is concentrated on some specific directions. PCA finds the directions that most concentrate the variance.
+With the raw data one can see the variance of each original feature, but may be the case that variance is distributed uniformly per feature. PCA finds the d directions that most concentrate the variance.
 
 Variance in a direction $\mathbf{w}$ is $\mathbf{w}^T S \mathbf{w}$ which depends on the diagonals of $S$ (the variance per feature), but also on the cross terms (covariances between each pair of features)
 

@@ -121,7 +121,7 @@ A linear map that preserves lengths preserves angles also, but not vice versa, a
 
 Orthonormal square matrix transformations preserve lengths and angles, so the base vectors of $M^T$ will still be of the same length $1$, and have the same angle between them, i.e. orthogonality is preserved. The columns of $W^T$ will be precisely each column of $M$ with the $R^T$ transformation applied.
 
-That means that the sum:
+That means that the following is true:
 
 $$\sum_{j=1}^n \sum_{i=1}^d (w_{ij})^2 = d$$
 

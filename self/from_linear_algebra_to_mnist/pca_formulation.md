@@ -89,3 +89,7 @@ The variance of a feature in the dataset is precisely the sum of the squared len
 The sum of the variances per feature is not changed by the orthogonal transformation, this means the sum of the variances of the initial features is the same as the sum of the variances of the transformed features. This allows to formulate the problem as finding the top d directions that most variance concentrate.
 
 Note that the mean of the dataset is still $0$ after the transformation, and that the dataset can be centered at $0$ by subtracting its mean before doing this analysis without losing generality.
+
+## Difference with Least Squares
+
+In the least squares problem the subspace is fixed, and the question is find the best approximation of a vector $b$ in that space, the answer turns out to be the projection of that vector in that subspace. In this problem the input is a set of vectors, and a number $d$, the question is find the subspace of rank at most d, that best approximates those vectors. Where the approximation of a vector with a subspace is its projection in that space.

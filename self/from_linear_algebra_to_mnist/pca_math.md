@@ -1,55 +1,7 @@
-## Problem It Solves:
+## Math Proof
 
-There is a list of vectors $S = \{v_1, v_2, \dots, v_N\}$ of a $n$-dimensional space $A$. The question is: 
-
-Find a pair of matrices $M = d \times n$, $M' = n \times d$, that minimizes the following sum:
-
-$$\sum_{v \in S} \|v - M' M v\|^2$$
-
-Here is the catch, because $n > d$, it is not possible to obtain $(M' M v = v)$, so the question is: 
-
-Find the pair of matrices $M'$, $M$ that minimize that sum.
-
-See that the span of $M'Mv$ will be vectors of dimension at most $d$.
-
-## How to Solve It:
-
-### Projection Linear Operator
-
-Fix $M'$, from the least square problem is known that the quantity $\|v - M' (Mv)\|^2$ is minimized when $Mv$ is the vector such that $M'(Mv)$ is the projection of $v$ on the space spanned by $M'$.
-
-The fact is that $M'M$ has to be the projection linear operator in the subspace spanned by $M'$, see that $M'$ fixes $M$ to ensure that, so I could replace $M'$ by any matrix whose column vectors span the same subspace that $M'$. The projection linear operator is determined by the subspace not by the basis used to span that space.
-
-Due to the projection, the vectors $v$, $M'(Mv)$, $(v - M'Mv)$ form a triangle that's rectangle.
-
-$$\|v\|^2 = \|M'Mv\|^2 + \|(v - M'Mv)\|^2$$
-
-Because the sum $\|v\|^2$ is fixed, minimizing the original sum is equivalent to maximize the sum of $\|M'Mv\|^2$, and at this point what can be done.
-
-If the columns of $M'$ are linearly dependent, let's say $d_1 < d$ is the rank of $M'$, then because what matters is the subspace spanned by $M'$ I can find a base made by $d_1$ linearly independent vectors whose remaining $d - d_1$ components are $0$. This is equivalent to solve the problem for $d_1$ instead of $d$.
-
-For example, let's say $n = 3$, $d = 2$, and $M' = \begin{pmatrix}
-  1 & 2  \\
-  1 & 2 \\
-\end{pmatrix}$, that subspace is the same as the one spanned by $M' = \begin{pmatrix}
-  1 & 0  \\
-  1 & 0 \\
-\end{pmatrix}$, if using the latter, observe that the last $1 = 2 - 1$ coordinates, don't contribute to the sum that's being maximized $\|M'Mv\|^2$ because they are $0$. 
-
-See that what's being summed per vector is its norm, which is the square of each coordinate, so if the last $(d - d_1)$ coordinates are $0$, that's the worst case, so having rank $d$ will be always better than something smaller. From this point assume that columns of $M'$ are linearly independent.
-
-Always can be found an orthonormal basis that spans the same subspace as the column vectors of $M'$
-
-### Optional
-
-But because those are linearly independent, I can use the $QR$ factorization in particular.
-
-From the $QR$ factorization is possible to find $Q'$ such that: $M' = Q'R$ and $M$ should be $R^{-1}(Q')^T$, see that $M' M = Q' (Q')^T$, so it is possible to use $Q'$ instead of $M$, and it has the plus that its columns are made of orthonormal vectors.
-
-
-### Variance Computation
-
-Let's assume that $M'$ is made up by orthonormal vectors. So that $M = (M')^T$.
+1. $M'$ is a $n * d$ matrix with orthonormal columns.
+2. $M = (M')^T$ is a $d * n$ matrix.
 
 The idea is that because $M M' = I_d$, and $\|M'Mv\|^2 = \langle M'Mv, M'Mv \rangle$, get that:
 
@@ -112,11 +64,36 @@ M' &= n \times d
 
 $MSM'$ is a $d \times d$ matrix, from this point how to go on?
 
+### Same result, other path
+
+Compute the variance of each feature after is transformed by an orthogonal transformation.
+
+$M' \cdot v$, $M'$ is the orthogonal transformation, $(n \times d)$
+
+$v$ is each vector $(1 \times n)$
+
+$(M' Mv)$ is a vector $(1 \times n) = \sum_{i = 1}^d \langle p_i, v \rangle p_i$, where $p_i$ are the column vectors of $M'$, i.e. the new features' axis.
+
+The variance along that axis (feature) is $\sum_{j = 1}^m |\langle p_i, v_j \rangle|^2$. Which written in matrix form is: $\sum_{j = 1}^m |(p_i^T \cdot v_j)|^2$.
+
+$$\begin{align}
+(p_i^T \cdot v_j) \cdot (p_i^T \cdot v_j) &= (p_i^T \cdot v_j) \cdot (v_j^T \cdot p_i) \\
+&= p_i^T \cdot V_j \cdot p_i
+\end{align}$$
+
+See that $V_j$ is a square matrix, but this being sum overall the $m$ vectors means:
+
+$p_i^T \cdot S \cdot p_i$
+
+$S$ is the covariance matrix of the features, i.e. $S[i, j] = \text{covariance}$ between feature $i$, and feature $j$ (assuming data was centered, and up to a scale constant).
+
+When doing $M S M'$ in each diagonal of this matrix is the term $p^T_i S p_i$. The total variance is thus $\text{tr}(M S M')$.
+
 ### Covariance Matrix.
 
 This $S$ matrix has a statistical interpretation, $S[i, j]$ is the covariance between feature $i$ and feature $j$ (assuming features were centered at $0$, and scaled by $\frac{1}{N}$). 
 
-$S$ is a real symmetric matrix, the spectral theorem allows ensuring that it has an orthogonal diagonalization. $S$ can be diagonalized, so let $S = RDR^{-1}$. $R$ is made by orthonormal columns, which is equivalent to $R^{-1} = R^T$.
+$S$ is a real symmetric matrix with positive entries, the spectral theorem allows ensuring that it has an orthogonal diagonalization. $S$ can be diagonalized, so let $S = RDR^{-1}$. $R$ is made by orthonormal columns, which is equivalent to $R^{-1} = R^T$.
 
 If $W = (MR)$, then $MSM' = WDW^T$, because $D$ is a diagonal matrix, let $w_1, w_2, \dots, w_d$ the vector columns of $W^T$, and $d_1, d_2, \dots, d_n$ the diagonal values of $D$ then:
 
@@ -192,12 +169,4 @@ Then $R$ changes the coordinates back to the standard base. But see that due to 
 
 ## Conclusion from the Math
 
-The subspace that minimizes the sum across all the vectors is the one generated by the largest $d$ eigenvectors of the matrix obtained after doing $\sum_{i = 1}^{N} v v^T$. Because of this, the compressed vectors are obtained by projecting $v$ onto this subspace. That's obtained by applying $M$ to $v$, and with this one what can be recovered is $M' M v$.
-
-To apply PCA:
-
-Find the covariance matrix, remember this is the covariance of the observed features, not the vectors, the vectors is a list of observed features. Diagonalize it, and start taking eigenvalues largest to smallest, looking at the cumulative ratio, until there is an elbow, or the curve flattens.
-
-Basically, from this point there is no much contribution to the others dimensions, because the variance those are contributing is small compared to what's already taken.
-
-Thus, see that a bad PCA is one where all the dimensions are contributing approximately the same variance.
+The subspace that minimizes the sum of approximation errors across all the vectors is the one generated by the largest $d$ eigenvectors of the matrix obtained after doing $\sum_{i = 1}^{N} v v^T$. This solution has the property that the solution for $d + 1$ is the solution for $d$ plus one new vector.

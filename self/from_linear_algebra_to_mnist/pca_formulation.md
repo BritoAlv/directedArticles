@@ -66,7 +66,7 @@ The difficulty of the problem arises when the number of vectors to approximate i
 
 sum v in D |v|^2 = sum v in D |v_k|^2 + sum v in D |v - v_k|^2
 
-If in the dataset there are m vectors, then the problem is about find the subspace spanned by d vectors that minimizes the sum of the approximation error per vectors, or maximizes the sum of the square lengths of the projections (approximations).
+If in the dataset there are m vectors, then the problem is about find the subspace spanned by d vectors that minimizes the sum of the approximation error per vectors, or maximizes the sum of the square lengths of the projections (approximations). Keep in mind that for all the vectors the same transformed features or axis are used. 
 
 As long as m <= d, the problem is trivial. The space spanned by those m vectors has rank at most d, so one can represent it with an orthogonal basis, and the approximation of each vector will be itself, because it lies on the subspace. The challenge is when m >> d.
 

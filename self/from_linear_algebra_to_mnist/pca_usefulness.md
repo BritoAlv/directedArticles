@@ -10,7 +10,7 @@ Data has that property or don't. PCA is not forcing that distribution. PCA revea
 
 With the raw data one can see the variance of each original feature, but may be the case that variance is distributed uniformly per feature. PCA finds the d directions that most concentrate the variance.
 
-Variance in a direction $\mathbf{w}$ is $\mathbf{w}^T S \mathbf{w}$ which depends on the diagonals of $S$ (the variance per feature), but also on the cross terms (covariances between each pair of features)
+Variance in a direction $\mathbf{w}$ is $\mathbf{w}^T S \mathbf{w}$ which depends on the diagonals of $S$ (the variance per feature), but also on the cross terms (covariance between each pair of features)
 
 $$\mathbf{w}^T S \mathbf{w} = \sum_i S_{ii} w_i^2 + \sum_{i \neq j} S_{ij} w_i w_j$$
 

@@ -166,14 +166,15 @@ venv.bak/
 # Rope project settings
 .ropeproject
 
-# mkdocs documentation
-/site
-
 # quarto output
-/_site
+/site
+/site_libs
+
+# quarto staging project and state
+/quarto_src
 /.quarto
-self/codeview/
-_quarto.yml
+/_site
+**/*.quarto_ipynb
 
 # mypy
 .mypy_cache/
@@ -225,8 +226,4 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Cached MathJax fonts (built at site generation time)
-site_tools/vendor/fonts/
-
 /.quarto/
-**/*.quarto_ipynb

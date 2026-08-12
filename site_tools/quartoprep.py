@@ -19,6 +19,8 @@ SITE = ROOT / "site"
 CONFIG = ROOT / "_quarto.yml"
 SITEIGNORE = ROOT / ".siteignore"
 VENDOR = ROOT / "site_tools" / "vendor"
+STASH = ROOT / ".cache" / "quarto_stage"
+PRESERVE_DIRS = (".quarto", "_freeze")
 
 SITE_URL = "https://britoalv.github.io/directedArticles/"
 DEPLOY_ENV = "QUARTO_DEPLOY"
@@ -85,6 +87,13 @@ def is_ignored(rel_from_root: str, specs: list[tuple[str, pathspec.GitIgnoreSpec
         if spec.match_file(local):
             return True
     return False
+
+
+def write_if_changed(dst: Path, content: str) -> None:
+    if dst.is_file() and dst.read_text(encoding="utf-8") == content:
+        return
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    dst.write_text(content, encoding="utf-8")
 
 
 def collect(specs: list[tuple[str, pathspec.GitIgnoreSpec]]) -> list[Path]:
@@ -193,17 +202,29 @@ class Builder:
         self.pages: list[tuple[str, list[str], str]] = []
 
     def stage(self) -> None:
+        stash: Path | None = None
         if STAGE.exists():
+            stash = STASH / "keep"
+            shutil.rmtree(stash, ignore_errors=True)
+            stash.mkdir(parents=True)
+            for name in PRESERVE_DIRS:
+                src = STAGE / name
+                if src.exists():
+                    shutil.move(str(src), str(stash / name))
             shutil.rmtree(STAGE)
         STAGE.mkdir(parents=True)
+        if stash is not None:
+            for name in PRESERVE_DIRS:
+                src = stash / name
+                if src.exists():
+                    shutil.move(str(src), str(STAGE / name))
+            shutil.rmtree(stash, ignore_errors=True)
         for src in self.published:
             dst = STAGE / rel_of(src)
-            dst.parent.mkdir(parents=True, exist_ok=True)
             if src.suffix.lower() == ".md":
-                dst.write_text(self.process_md(src), encoding="utf-8")
-            elif src.suffix.lower() == ".ipynb":
-                shutil.copy2(src, dst)
+                write_if_changed(dst, self.process_md(src))
             else:
+                dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(src, dst)
         self.stage_assets()
         self.gen_codeview()
@@ -322,8 +343,7 @@ class Builder:
                 f"{fence}\n"
             )
             dst = STAGE / CODE_OUTPUT_DIR / f"{rel}.qmd"
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            dst.write_text(content, encoding="utf-8")
+            write_if_changed(dst, content)
             self.pages.append((os.path.join(CODE_OUTPUT_DIR, f"{rel}.qmd"), [], ""))
 
     def tree(self) -> dict:
@@ -380,9 +400,9 @@ class Builder:
             "style": "docked",
             "contents": self.sidebar_contents(),
         }
-        (STAGE / "_quarto.yml").write_text(
+        write_if_changed(
+            STAGE / "_quarto.yml",
             yaml.safe_dump(config, sort_keys=False, allow_unicode=True, default_flow_style=False),
-            encoding="utf-8",
         )
 
     def stage_assets(self) -> None:
@@ -441,10 +461,10 @@ class Builder:
     def gen_index(self) -> None:
         lines = [
             "---",
-            'title: "Home"',
+            'title: "Directed Articles"',
             "---",
             "",
-            "Every subfolder is an independent mini-project: articles, math, code and notebooks.",
+            "Directed Articles.",
             "",
         ]
         tree = self.tree()
@@ -466,15 +486,15 @@ class Builder:
         lines.append("")
         lines.append("- [Tag index](tags.html)")
         lines.append("")
-        (STAGE / "index.qmd").write_text("\n".join(lines), encoding="utf-8")
+        write_if_changed(STAGE / "index.qmd", "\n".join(lines))
 
     def gen_tags(self) -> None:
-        tag_map: dict[str, list[tuple[str, str]]] = {}
+        tag_map: dict[str, tuple[str, list[tuple[str, str]]]] = {}
         for rel, tags, _ in self.pages:
-            for tag in set(tags):
+            for tag in sorted(set(tags), key=slugify):
                 slug = slugify(tag)
                 label = Path(rel).stem.replace("_", " ").replace("-", " ").title()
-                tag_map.setdefault(slug, []).append((label, rel))
+                tag_map.setdefault(slug, (tag, []))[1].append((label, rel))
         lines = [
             "---",
             'title: "Tags"',
@@ -482,14 +502,14 @@ class Builder:
             "",
         ]
         for slug in sorted(tag_map):
-            entries = sorted(set(tag_map[slug]), key=lambda e: e[0].lower())
-            first_label = entries[0][0]
-            lines.append(f"## {first_label} {{#{slug}}}")
+            tag, entries = tag_map[slug]
+            entries = sorted(set(entries), key=lambda e: e[0].lower())
+            lines.append(f"## {tag} {{#{slug}}}")
             lines.append("")
             for label, href in entries:
                 lines.append(f"- [{label}]({href})")
             lines.append("")
-        (STAGE / "tags.qmd").write_text("\n".join(lines), encoding="utf-8")
+        write_if_changed(STAGE / "tags.qmd", "\n".join(lines))
 
     def gen_404(self) -> None:
         content = (
@@ -499,7 +519,7 @@ class Builder:
             "This page does not exist (or was excluded from the published site).\n\n"
             "[Back to the index](index.html)\n"
         )
-        (STAGE / "404.qmd").write_text(content, encoding="utf-8")
+        write_if_changed(STAGE / "404.qmd", content)
 
     def render(self) -> None:
         if SITE.exists():

@@ -23,4 +23,6 @@ jobs:
         run: uv sync
 
       - name: Deploy site
+        env:
+          MKDOCS_DEPLOY: "true"
         run: uv run mkdocs gh-deploy --force

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -15,6 +16,8 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+_SITE_DEPLOY_VAR = "MKDOCS_DEPLOY"
+
 
 class GitignorePlugin(BasePlugin):
     def on_files(self, files: "Files", config: "MkDocsConfig") -> "Files":
@@ -23,14 +26,15 @@ class GitignorePlugin(BasePlugin):
         docs_dir = Path(config["docs_dir"]).resolve()
         prefix = docs_dir.relative_to(root).as_posix()
 
-        patterns: list[str] = []
-        source_names: list[str] = []
+        ignore_files = [".gitignore"]
+        if os.environ.get(_SITE_DEPLOY_VAR):
+            ignore_files.append(".siteignore")
 
-        for filename in (".gitignore", ".siteignore"):
+        patterns: list[str] = []
+        for filename in ignore_files:
             path = config_dir / filename
             if path.is_file():
                 patterns.extend(path.read_text(encoding="utf-8").splitlines())
-                source_names.append(filename)
 
         if not patterns:
             return files

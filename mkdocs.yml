@@ -1,0 +1,68 @@
+site_name: Directed Articles
+docs_dir: self
+
+theme:
+  name: material
+  font: false
+  features:
+    - navigation.top
+    - navigation.instant
+    - search.suggest
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid_custom
+  - tables
+  - admonition
+
+plugins:
+  - search
+  - mkdocs-jupyter:
+      include:
+        - "*.ipynb"
+  - gitignore
+  - social
+  - git-revision-date-localized:
+      enable_creation_date: true
+      exclude:
+        - index.md
+  - minify:
+      minify_js: false
+  - tags
+  - mermaid2
+  - table-reader
+  - mathblock
+  - assets:
+      files:
+        site_tools/mathjax.js: site_tools/mathjax.js
+        site_tools/vendor/tex-svg.js: site_tools/vendor/tex-svg.js
+        site_tools/vendor/fonts.css: site_tools/vendor/fonts.css
+        site_tools/vendor/fonts/: site_tools/vendor/fonts/
+  - codeview
+  - filetree
+  - filebrowser
+
+extra_css:
+  - site_tools/vendor/fonts.css
+
+extra_javascript:
+  - site_tools/mathjax.js
+  - site_tools/vendor/tex-svg.js

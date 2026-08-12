@@ -26,26 +26,41 @@ class GitignorePlugin(BasePlugin):
         docs_dir = Path(config["docs_dir"]).resolve()
         prefix = docs_dir.relative_to(root).as_posix()
 
-        ignore_files = [".gitignore"]
+        ignore_specs: list[tuple[str, pathspec.GitIgnoreSpec]] = []
+
+        def add_ignore_file(path: Path) -> None:
+            if not path.is_file():
+                return
+            lines = path.read_text(encoding="utf-8").splitlines()
+            if not lines:
+                return
+            spec = pathspec.GitIgnoreSpec.from_lines(lines)
+            base = path.parent.resolve().relative_to(root).as_posix()
+            ignore_specs.append((base, spec))
+
+        add_ignore_file(config_dir / ".gitignore")
+        for path in docs_dir.rglob(".gitignore"):
+            add_ignore_file(path)
         if os.environ.get(_SITE_DEPLOY_VAR):
-            ignore_files.append(".siteignore")
+            add_ignore_file(config_dir / ".siteignore")
 
-        patterns: list[str] = []
-        for filename in ignore_files:
-            path = config_dir / filename
-            if path.is_file():
-                patterns.extend(path.read_text(encoding="utf-8").splitlines())
-
-        if not patterns:
+        if not ignore_specs:
             return files
-
-        spec = pathspec.GitIgnoreSpec.from_lines(patterns)
 
         for file in files:
             if not file.inclusion.is_included():
                 continue
+
             rel = f"{prefix}/{file.src_uri}"
-            if spec.match_file(rel):
-                logger.info("Excluding '%s'", rel)
-                file.inclusion = InclusionLevel.EXCLUDED
+            for base, spec in ignore_specs:
+                if base:
+                    if rel != base and not rel.startswith(f"{base}/"):
+                        continue
+                    local_rel = rel[len(base) :].lstrip("/")
+                else:
+                    local_rel = rel
+                if spec.match_file(local_rel):
+                    logger.info("Excluding '%s'", rel)
+                    file.inclusion = InclusionLevel.EXCLUDED
+                    break
         return files

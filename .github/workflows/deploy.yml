@@ -29,6 +29,8 @@ jobs:
         run: uv sync
 
       - name: Build site
+        env:
+          MKDOCS_DEPLOY: "true"
         run: uv run mkdocs build
 
       - name: Setup Pages

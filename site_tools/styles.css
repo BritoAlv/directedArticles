@@ -11,3 +11,10 @@
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+#quarto-sidebar .sidebar-item img.sidebar-file-icon {
+  width: 1.1em;
+  height: 1.1em;
+  margin-right: 0.3em;
+  vertical-align: -0.15em;
+}

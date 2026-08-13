@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import io
+import json
 import os
 import re
 import shutil
@@ -104,6 +105,43 @@ KATEX_VERSION = "0.18.4"
 KATEX_TARBALL = f"https://registry.npmjs.org/katex/-/katex-{KATEX_VERSION}.tgz"
 KATEX_CACHE = VENDOR / "katex"
 
+ICON_CACHE = VENDOR / "icons"
+ICON_BASE = (
+    "https://cdn.jsdelivr.net/gh/vscode-icons/vscode-icons@master/icons/"
+)
+
+EXT_ICONS = {
+    ".rs": "file_type_rust",
+    ".py": "file_type_python",
+    ".toml": "file_type_toml",
+    ".sh": "file_type_shell",
+    ".bash": "file_type_shell",
+    ".js": "file_type_js",
+    ".ts": "file_type_typescript",
+    ".jsx": "file_type_reactjs",
+    ".tsx": "file_type_reactts",
+    ".json": "file_type_json",
+    ".yml": "file_type_yaml",
+    ".yaml": "file_type_yaml",
+    ".c": "file_type_c",
+    ".h": "file_type_cheader",
+    ".cpp": "file_type_cpp",
+    ".hpp": "file_type_cppheader",
+    ".java": "file_type_java",
+    ".go": "file_type_go",
+    ".rb": "file_type_ruby",
+    ".txt": "file_type_text",
+    ".ini": "file_type_ini",
+    ".cfg": "file_type_ini",
+    ".sql": "file_type_sql",
+    ".html": "file_type_html",
+    ".css": "file_type_css",
+    ".md": "file_type_markdown",
+    ".ipynb": "file_type_jupyter",
+}
+LOCK_ICONS = {"Cargo.lock": "file_type_cargo", "uv.lock": "file_type_uv"}
+DEFAULT_ICON = "default_file"
+
 FONTS_CACHE = VENDOR / "fonts"
 GOOGLE_FONTS_URL = (
     "https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400"
@@ -196,6 +234,52 @@ def ensure_fonts() -> Path:
     os.replace(tmp, FONTS_CACHE)
     print(f"fetched Lato fonts into {FONTS_CACHE}")
     return FONTS_CACHE
+
+
+def ensure_file_icons(names: set[str]) -> Path:
+    """Return the cache dir with per-extension SVGs, fetching missing ones from
+    the vscode-icons set (cached on disk; failed fetches fall back to the
+    generic file icon)."""
+    ICON_CACHE.mkdir(parents=True, exist_ok=True)
+    wanted = names | {DEFAULT_ICON}
+    fetched = {p.name.removesuffix(".svg") for p in ICON_CACHE.glob("*.svg")}
+    missing = wanted - fetched
+    if not missing:
+        return ICON_CACHE
+
+    def fetch(name: str) -> str | None:
+        req = urllib.request.Request(
+            ICON_BASE + name + ".svg",
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                    "(KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+                )
+            },
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                data = resp.read()
+        except Exception:
+            return None
+        if resp.status != 200 or not data.strip():
+            return None
+        return data.decode("utf-8")
+
+    for name in sorted(missing):
+        data = fetch(name)
+        if data is None:
+            print(f"warning: could not fetch icon {name}, using {DEFAULT_ICON}.svg")
+            if name == DEFAULT_ICON:
+                ICON_CACHE.mkdir(parents=True, exist_ok=True)
+                (ICON_CACHE / f"{name}.svg").write_text(
+                    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"></svg>',
+                    encoding="utf-8",
+                )
+            continue
+        (ICON_CACHE / f"{name}.svg").write_text(data, encoding="utf-8")
+    print(f"fetched {sorted(missing)} icons into {ICON_CACHE}")
+    return ICON_CACHE
 
 
 def localize_font_links() -> None:
@@ -365,6 +449,7 @@ class Builder:
         self.gen_index()
         self.gen_tags()
         self.gen_404()
+        self.gen_sidebar_icons()
         self.stage_config(self.preview)
 
     def process_md(self, src: Path) -> str:
@@ -517,19 +602,21 @@ class Builder:
         def file_entry(kind: str, name: str, href: str) -> dict:
             return {"href": href, "text": name}
 
-        def section(label: str, node: dict) -> dict:
+        def section(label: str, node: dict) -> dict | None:
             entry: dict = {"section": label, "contents": []}
             for name, child in sorted(node["dirs"].items(), key=lambda kv: kv[0].lower()):
-                if child["files"]:
-                    entry["contents"].append(section(humanize(name), child))
+                sub = section(humanize(name), child)
+                if sub is not None:
+                    entry["contents"].append(sub)
             page_files = [f for f in node["files"] if f[0] != "file"]
             for kind, name, href in sorted(page_files, key=lambda f: f[1].lower()):
                 entry["contents"].append(file_entry(kind, name, href))
-            return entry
+            return entry if entry["contents"] else None
 
         for name, node in sorted(tree["dirs"].items(), key=lambda kv: kv[0].lower()):
-            if any(f[0] != "file" for f in node["files"]):
-                out.append(section(humanize(name), node))
+            item = section(humanize(name), node)
+            if item is not None:
+                out.append(item)
         page_files = [f for f in tree["files"] if f[0] != "file"]
         for kind, name, href in sorted(page_files, key=lambda f: f[1].lower()):
             out.append(file_entry(kind, name, href))
@@ -545,6 +632,7 @@ class Builder:
             "contents": self.sidebar_contents(),
         }
         config["format"]["html"]["css"] = ["styles.css"]
+        config["format"]["html"]["include-in-header"] = ["sidebar-icons.html"]
         write_if_changed(STAGE / "styles.css", (ROOT / "site_tools" / "styles.css").read_text(encoding="utf-8"))
         if preview:
             config["format"]["html"]["html-math-method"] = {
@@ -681,6 +769,77 @@ class Builder:
         if result.returncode != 0:
             sys.exit(f"quarto render failed with exit code {result.returncode}")
 
+    def icon_map(self) -> dict[str, str]:
+        icon_map: dict[str, str] = {}
+        for src in self.published:
+            rel = rel_of(src)
+            ext = src.suffix.lower()
+            if ext == ".md":
+                href = os.path.splitext(rel)[0] + ".html"
+                icon = EXT_ICONS[".md"]
+            elif ext == ".ipynb":
+                href = os.path.splitext(rel)[0] + ".html"
+                icon = EXT_ICONS[".ipynb"]
+            elif ext in CODE_EXTENSIONS:
+                href = f"{CODE_OUTPUT_DIR}/{rel}.html"
+                icon = LOCK_ICONS.get(src.name) or EXT_ICONS.get(ext, DEFAULT_ICON)
+            else:
+                continue
+            icon_map[href] = icon
+        return icon_map
+
+    def gen_sidebar_icons(self) -> None:
+        """Write a script (inlined into every page header) that attaches the
+        per-extension icon to each sidebar file entry on page load."""
+        icons = json.dumps(self.icon_map())
+        if icons == "{}":
+            write_if_changed(STAGE / "sidebar-icons.html", "")
+            return
+        script = (
+            "<script>\n"
+            "(function () {\n"
+            "  var icons = " + icons + ";\n"
+            "  function attachIcons() {\n"
+            "    var css = document.querySelector('link[href$=\"styles.css\"]');\n"
+            "    if (!css) return;\n"
+            "    var base = css.href.slice(0, css.href.lastIndexOf('/') + 1);\n"
+            "    var links = document.querySelectorAll(\n"
+            "      '#quarto-sidebar a.sidebar-item-text[href]'\n"
+            "    );\n"
+            "    for (var i = 0; i < links.length; i++) {\n"
+            "      var a = links[i];\n"
+            "      if (a.querySelector('img.sidebar-file-icon')) continue;\n"
+            "      var icon = null;\n"
+            "      for (var key in icons) {\n"
+            "        if (a.href === base + key) { icon = icons[key]; break; }\n"
+            "      }\n"
+            "      if (!icon) continue;\n"
+            "      var img = document.createElement('img');\n"
+            "      img.src = base + 'icons/' + icon + '.svg';\n"
+            "      img.className = 'sidebar-file-icon';\n"
+            "      img.alt = '';\n"
+            "      var text = a.querySelector('.menu-text');\n"
+            "      if (text) a.insertBefore(img, text); else a.appendChild(img);\n"
+            "    }\n"
+            "  }\n"
+            "  if (document.readyState === 'loading') {\n"
+            "    document.addEventListener('DOMContentLoaded', attachIcons);\n"
+            "  } else {\n"
+            "    attachIcons();\n"
+            "  }\n"
+            "})();\n"
+            "</script>\n"
+        )
+        write_if_changed(STAGE / "sidebar-icons.html", script)
+
+    def sync_icons(self) -> None:
+        if not SITE.exists():
+            return
+        ensure_file_icons(set(self.icon_map().values()))
+        icons = SITE / "icons"
+        icons.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(ICON_CACHE, icons, dirs_exist_ok=True)
+
     def postprocess(self) -> None:
         if not SITE.exists():
             return
@@ -688,6 +847,7 @@ class Builder:
         vendor_dir.mkdir(parents=True, exist_ok=True)
         shutil.copytree(ensure_katex(), vendor_dir / "katex", dirs_exist_ok=True)
         localize_font_links()
+        self.sync_icons()
         og = STAGE / "og"
         if og.exists():
             shutil.copytree(og, SITE / "og", dirs_exist_ok=True)
@@ -783,6 +943,7 @@ def main() -> None:
             vendor_dir.mkdir(parents=True, exist_ok=True)
             shutil.copytree(ensure_katex(), vendor_dir / "katex", dirs_exist_ok=True)
             localize_font_links()
+            builder.sync_icons()
             stop = threading.Event()
             threading.Thread(target=watch_localize_fonts, args=(stop,), daemon=True).start()
             builder.touch_outputs()

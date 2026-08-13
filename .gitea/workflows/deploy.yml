@@ -1,0 +1,20 @@
+name: Deploy local site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: local
+    steps:
+      - name: Checkout
+        run: git clone http://localhost:3000/BritoAlv/directedArticles.git .
+      - name: Build site
+        run: uvx --from 'git+http://localhost:3000/BritoAlv/quarto_custom.git@main' quarto-custom --config quarto_custom_site.toml --deploy
+      - name: Deploy
+        run: |
+          rm -rf /srv/directedArticles/site
+          mkdir -p /srv/directedArticles
+          cp -r site /srv/directedArticles/site

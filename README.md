@@ -8,4 +8,4 @@ One of the goals is to represent the information in a way that allows algorithms
 
 ```bash
 uv run python site_tools/quartoprep.py --preview
-```bash
+```

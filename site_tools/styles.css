@@ -1,0 +1,8 @@
+#quarto-sidebar .sidebar-item {
+  margin-top: 0.55rem;
+  margin-bottom: 0.35rem;
+}
+
+#quarto-sidebar .sidebar-item-text {
+  line-height: 1.35rem;
+}

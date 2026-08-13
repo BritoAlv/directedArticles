@@ -2,12 +2,16 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import io
 import os
 import re
 import shutil
 import subprocess
 import sys
+import tarfile
+import threading
 import time
+import urllib.request
 from pathlib import Path
 
 import pathspec
@@ -42,14 +46,15 @@ LANGS = {
     ".css": "css",
 }
 
-MATHJAX_CDN_RE = re.compile(
-    r"https://cdn\.jsdelivr\.net/npm/mathjax@[\d.]+/[A-Za-z0-9_.-]+"
+KATEX_CDN_RE = re.compile(
+    r"https://cdn\.jsdelivr\.net/npm/katex@[A-Za-z0-9.]+/dist/(katex\.min\.(?:js|css))"
 )
 POLYFILL_RE = re.compile(
     r'\s*<script[^>]*src="https://cdnjs\.cloudflare\.com/polyfill[^"]*"[^>]*></script>\s*'
 )
 CDN_RE = re.compile(
-    r"(https?://(?:cdn\.jsdelivr\.net|cdn\.quarto\.org|cdnjs\.cloudflare\.com)[^\s\"'<>]*)"
+    r"(https?://(?:cdn\.jsdelivr\.net|cdn\.quarto\.org|cdnjs\.cloudflare\.com|"
+    r"fonts\.googleapis\.com|fonts\.gstatic\.com)[^\s\"'<>]*)"
 )
 
 MD_LINK_RE = re.compile(r"(\[[^\]]*\]\()([^)\s]+)\)")
@@ -93,6 +98,132 @@ def write_if_changed(dst: Path, content: str) -> None:
         return
     dst.parent.mkdir(parents=True, exist_ok=True)
     dst.write_text(content, encoding="utf-8")
+
+
+KATEX_VERSION = "0.18.4"
+KATEX_TARBALL = f"https://registry.npmjs.org/katex/-/katex-{KATEX_VERSION}.tgz"
+KATEX_CACHE = VENDOR / "katex"
+
+FONTS_CACHE = VENDOR / "fonts"
+GOOGLE_FONTS_URL = (
+    "https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400"
+    "&display=swap"
+)
+GOOGLE_FONTS_RE = re.compile(r'https://fonts\.googleapis\.com/css2\?[^"\'<>]+')
+GSTATIC_RE = re.compile(r"url\((https://fonts\.gstatic\.com/[^)]+)\)")
+
+
+def ensure_katex() -> Path:
+    """Return a directory with the pinned KaTeX assets, downloading and caching if needed."""
+    fonts = KATEX_CACHE / "fonts"
+    if (
+        (KATEX_CACHE / "katex.min.js").is_file()
+        and (KATEX_CACHE / "katex.min.css").is_file()
+        and fonts.is_dir()
+        and len(list(fonts.glob("*.woff2"))) >= 10
+    ):
+        return KATEX_CACHE
+    tmp = KATEX_CACHE.with_suffix(".tmp")
+    shutil.rmtree(tmp, ignore_errors=True)
+    tmp.mkdir(parents=True)
+    try:
+        with urllib.request.urlopen(KATEX_TARBALL, timeout=120) as resp:
+            data = resp.read()
+        with tarfile.open(fileobj=io.BytesIO(data), mode="r:gz") as tar:
+            for member in tar.getmembers():
+                if not member.name.startswith("package/dist/"):
+                    continue
+                rel = member.name[len("package/dist/"):]
+                if rel in ("katex.min.js", "katex.min.css") or rel.startswith("fonts/"):
+                    member.name = rel
+                    tar.extract(member, tmp, filter="data")
+    except Exception as exc:
+        shutil.rmtree(tmp, ignore_errors=True)
+        sys.exit(
+            f"KaTeX assets are not cached in {KATEX_CACHE} and fetching {KATEX_TARBALL} "
+            f"failed: {exc}"
+        )
+    shutil.rmtree(KATEX_CACHE, ignore_errors=True)
+    os.replace(tmp, KATEX_CACHE)
+    print(f"fetched KaTeX {KATEX_VERSION} into {KATEX_CACHE}")
+    return KATEX_CACHE
+
+
+def ensure_fonts() -> Path:
+    """Return a directory with Lato woff2 + a local @font-face stylesheet, cached on disk."""
+    if (FONTS_CACHE / "lato.css").is_file() and any(
+        (FONTS_CACHE / "lato").glob("*.woff2")
+    ):
+        return FONTS_CACHE
+    tmp = FONTS_CACHE.with_suffix(".tmp")
+    shutil.rmtree(tmp, ignore_errors=True)
+    (tmp / "lato").mkdir(parents=True)
+
+    def fetch(url: str) -> bytes:
+        req = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": (
+                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                    "(KHTML, like Gecko) Chrome/126.0 Safari/537.36"
+                )
+            },
+        )
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            return resp.read()
+
+    try:
+        css = fetch(GOOGLE_FONTS_URL).decode()
+    except Exception as exc:
+        shutil.rmtree(tmp, ignore_errors=True)
+        sys.exit(f"Lato fonts are not cached in {FONTS_CACHE} and fetching {GOOGLE_FONTS_URL} failed: {exc}")
+
+    def localize(match: re.Match) -> str:
+        url = match.group(1)
+        name = url.rsplit("/", 1)[-1].split("?")[0]
+        dest = tmp / "lato" / name
+        if not dest.is_file():
+            try:
+                dest.write_bytes(fetch(url))
+            except Exception as exc:
+                shutil.rmtree(tmp, ignore_errors=True)
+                sys.exit(f"failed to fetch font {url}: {exc}")
+        return f"lato/{name}"
+
+    css = GSTATIC_RE.sub(lambda m: f"url({localize(m)})", css)
+    (tmp / "lato.css").write_text(css)
+    shutil.rmtree(FONTS_CACHE, ignore_errors=True)
+    os.replace(tmp, FONTS_CACHE)
+    print(f"fetched Lato fonts into {FONTS_CACHE}")
+    return FONTS_CACHE
+
+
+def localize_font_links() -> None:
+    """Copy cached fonts into SITE and rewrite Google Fonts @imports to the local copy."""
+    fonts = SITE / "vendor" / "fonts"
+    if not (fonts / "lato.css").is_file():
+        fonts.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(ensure_fonts(), fonts, dirs_exist_ok=True)
+    for css in SITE.rglob("*.css"):
+        text = css.read_text(encoding="utf-8")
+        if "fonts.googleapis.com" not in text:
+            continue
+        depth = len(css.relative_to(SITE).parts) - 1
+        rel = "../" * depth + "vendor/fonts/lato.css"
+        css.write_text(GOOGLE_FONTS_RE.sub(rel, text), encoding="utf-8")
+
+
+def watch_localize_fonts(stop: threading.Event) -> None:
+    """Re-apply localize_font_links() while quarto preview regenerates site assets."""
+    while not stop.wait(2):
+        try:
+            if any(
+                "fonts.googleapis.com" in css.read_text(encoding="utf-8")
+                for css in SITE.rglob("*.css")
+            ):
+                localize_font_links()
+        except FileNotFoundError:
+            pass
 
 
 def collect(specs: list[tuple[str, pathspec.GitIgnoreSpec]]) -> list[Path]:
@@ -193,8 +324,9 @@ def merge_front_matter(meta: dict | None, body: str) -> str:
 
 
 class Builder:
-    def __init__(self, deploy: bool):
+    def __init__(self, deploy: bool, preview: bool = False):
         self.deploy = deploy
+        self.preview = preview
         self.specs = load_specs(deploy)
         self.published = collect(self.specs)
         self.published_rels = {rel_of(p) for p in self.published}
@@ -233,7 +365,7 @@ class Builder:
         self.gen_index()
         self.gen_tags()
         self.gen_404()
-        self.stage_config()
+        self.stage_config(self.preview)
 
     def process_md(self, src: Path) -> str:
         rel = rel_of(src)
@@ -401,7 +533,7 @@ class Builder:
         out.append({"href": "tags.qmd"})
         return out
 
-    def stage_config(self) -> None:
+    def stage_config(self, preview: bool = False) -> None:
         text = CONFIG.read_text(encoding="utf-8")
         config = yaml.safe_load(text)
         config["project"]["output-dir"] = "../site"
@@ -409,6 +541,13 @@ class Builder:
             "style": "docked",
             "contents": self.sidebar_contents(),
         }
+        config["format"]["html"]["css"] = ["styles.css"]
+        write_if_changed(STAGE / "styles.css", (ROOT / "site_tools" / "styles.css").read_text(encoding="utf-8"))
+        if preview:
+            config["format"]["html"]["html-math-method"] = {
+                "method": "katex",
+                "url": "/vendor/katex/",
+            }
         write_if_changed(
             STAGE / "_quarto.yml",
             yaml.safe_dump(config, sort_keys=False, allow_unicode=True, default_flow_style=False),
@@ -544,20 +683,28 @@ class Builder:
             return
         vendor_dir = SITE / "vendor"
         vendor_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(VENDOR / "tex-svg.js", vendor_dir / "tex-svg.js")
+        shutil.copytree(ensure_katex(), vendor_dir / "katex", dirs_exist_ok=True)
+        localize_font_links()
         og = STAGE / "og"
         if og.exists():
             shutil.copytree(og, SITE / "og", dirs_exist_ok=True)
         for html in SITE.rglob("*.html"):
             text = html.read_text(encoding="utf-8")
             depth = len(html.relative_to(SITE).parts) - 1
-            rel = "../" * depth + "vendor/tex-svg.js"
-            text = MATHJAX_CDN_RE.sub(lambda m: rel, text)
+            rel = "../" * depth
+            text = KATEX_CDN_RE.sub(lambda m: f"{rel}vendor/katex/{m.group(1)}", text)
             text = POLYFILL_RE.sub("", text)
             html.write_text(text, encoding="utf-8")
             cdn = CDN_RE.findall(text)
             if cdn:
                 message = f"remaining CDN references in {html}: {cdn}"
+                if self.deploy:
+                    sys.exit(message)
+                print(f"warning: {message}", file=sys.stderr)
+        for css in SITE.rglob("*.css"):
+            cdn = CDN_RE.findall(css.read_text(encoding="utf-8"))
+            if cdn:
+                message = f"remaining CDN references in {css}: {cdn}"
                 if self.deploy:
                     sys.exit(message)
                 print(f"warning: {message}", file=sys.stderr)
@@ -608,14 +755,14 @@ class Builder:
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Stage self/ into a Quarto website project, render it to site/ and "
-        "vendor runtime assets (MathJax)."
+        "vendor runtime assets (KaTeX)."
     )
     parser.add_argument("--deploy", action="store_true", help="apply .siteignore exclusions")
     parser.add_argument("--stage-only", action="store_true", help="build quarto_src/ without rendering")
     parser.add_argument("--preview", action="store_true", help="stage then run quarto preview on quarto_src/")
     args = parser.parse_args()
     deploy = args.deploy or os.environ.get(DEPLOY_ENV, "").lower() == "true"
-    builder = Builder(deploy)
+    builder = Builder(deploy, preview=args.preview)
     builder.stage()
     print(f"staged {len(builder.published)} published files into {STAGE}")
     if not args.stage_only:
@@ -629,8 +776,15 @@ def main() -> None:
                 builder.render_stale(stale)
             else:
                 print("preview: outputs up to date, skipping render")
+            vendor_dir = SITE / "vendor"
+            vendor_dir.mkdir(parents=True, exist_ok=True)
+            shutil.copytree(ensure_katex(), vendor_dir / "katex", dirs_exist_ok=True)
+            localize_font_links()
+            stop = threading.Event()
+            threading.Thread(target=watch_localize_fonts, args=(stop,), daemon=True).start()
             builder.touch_outputs()
             subprocess.run(["quarto", "preview", str(STAGE)], cwd=ROOT, check=False)
+            stop.set()
         else:
             builder.render()
             builder.postprocess()

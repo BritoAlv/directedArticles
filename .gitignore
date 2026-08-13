@@ -227,3 +227,8 @@ __marimo__/
 .streamlit/secrets.toml
 
 /.quarto/
+
+# KaTeX assets downloaded at build time
+/site_tools/vendor/katex/
+
+/site_tools/vendor/fonts/

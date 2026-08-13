@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 import pathspec
@@ -19,8 +20,6 @@ SITE = ROOT / "site"
 CONFIG = ROOT / "_quarto.yml"
 SITEIGNORE = ROOT / ".siteignore"
 VENDOR = ROOT / "site_tools" / "vendor"
-STASH = ROOT / ".cache" / "quarto_stage"
-PRESERVE_DIRS = (".quarto", "_freeze")
 
 SITE_URL = "https://britoalv.github.io/directedArticles/"
 DEPLOY_ENV = "QUARTO_DEPLOY"
@@ -111,7 +110,7 @@ def collect(specs: list[tuple[str, pathspec.GitIgnoreSpec]]) -> list[Path]:
                 kept_dirs.append(d)
         dirnames[:] = kept_dirs
         for f in filenames:
-            if f in (".gitignore", ".siteignore"):
+            if f in (".gitignore", ".siteignore", "__init__.py"):
                 continue
             rel = f"self/{rel_dir}/{f}" if rel_dir else f"self/{f}"
             if not is_ignored(rel, specs):
@@ -202,30 +201,33 @@ class Builder:
         self.pages: list[tuple[str, list[str], str]] = []
 
     def stage(self) -> None:
-        stash: Path | None = None
-        if STAGE.exists():
-            stash = STASH / "keep"
-            shutil.rmtree(stash, ignore_errors=True)
-            stash.mkdir(parents=True)
-            for name in PRESERVE_DIRS:
-                src = STAGE / name
-                if src.exists():
-                    shutil.move(str(src), str(stash / name))
-            shutil.rmtree(STAGE)
-        STAGE.mkdir(parents=True)
-        if stash is not None:
-            for name in PRESERVE_DIRS:
-                src = stash / name
-                if src.exists():
-                    shutil.move(str(src), str(STAGE / name))
-            shutil.rmtree(stash, ignore_errors=True)
+        STAGE.mkdir(parents=True, exist_ok=True)
+        expected: set[str] = set()
         for src in self.published:
-            dst = STAGE / rel_of(src)
+            rel = rel_of(src)
+            dst = STAGE / rel
+            expected.add(rel)
             if src.suffix.lower() == ".md":
                 write_if_changed(dst, self.process_md(src))
             else:
-                dst.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(src, dst)
+                if (
+                    not dst.exists()
+                    or dst.stat().st_size != src.stat().st_size
+                    or dst.stat().st_mtime_ns != src.stat().st_mtime_ns
+                ):
+                    dst.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(src, dst)
+        root_generated = {"index.qmd", "tags.qmd", "404.qmd", "_quarto.yml"}
+        protected = {".quarto", "_freeze", "og", CODE_OUTPUT_DIR}
+        for dirpath, dirnames, filenames in os.walk(STAGE):
+            dirnames[:] = [d for d in dirnames if d not in protected]
+            rel_dir = Path(dirpath).relative_to(STAGE).as_posix()
+            for f in filenames:
+                if rel_dir == "." and f in root_generated:
+                    continue
+                rel = f if rel_dir == "." else f"{rel_dir}/{f}"
+                if rel not in expected:
+                    (Path(dirpath) / f).unlink()
         self.stage_assets()
         self.gen_codeview()
         self.gen_index()
@@ -314,6 +316,7 @@ class Builder:
         return HREF_RE.sub(rep_href, text)
 
     def gen_codeview(self) -> None:
+        generated: set[str] = set()
         for src in self.published:
             ext = src.suffix.lower()
             if ext not in CODE_EXTENSIONS:
@@ -342,9 +345,15 @@ class Builder:
                 f"{data.rstrip()}\n"
                 f"{fence}\n"
             )
-            dst = STAGE / CODE_OUTPUT_DIR / f"{rel}.qmd"
-            write_if_changed(dst, content)
-            self.pages.append((os.path.join(CODE_OUTPUT_DIR, f"{rel}.qmd"), [], ""))
+            rel_qmd = os.path.join(CODE_OUTPUT_DIR, f"{rel}.qmd")
+            generated.add(rel_qmd)
+            write_if_changed(STAGE / rel_qmd, content)
+            self.pages.append((rel_qmd, [], ""))
+        cvd = STAGE / CODE_OUTPUT_DIR
+        if cvd.is_dir():
+            for p in cvd.rglob("*.qmd"):
+                if p.relative_to(STAGE).as_posix() not in generated:
+                    p.unlink()
 
     def tree(self) -> dict:
         tree: dict = {"dirs": {}, "files": []}
@@ -560,6 +569,41 @@ class Builder:
         n_tags = len({slugify(t) for _, tags, _ in self.pages for t in tags})
         print(f"rendered {n_pages} pages ({n_md} markdown, {n_code} code views), {n_tags} tags")
 
+    def stale_outputs(self) -> list[Path]:
+        if not SITE.exists():
+            return [
+                p for p in STAGE.rglob("*")
+                if p.is_file() and p.suffix.lower() in (".qmd", ".md")
+            ]
+        stale: list[Path] = []
+        for q in STAGE.rglob("*"):
+            if not q.is_file() or q.suffix.lower() not in (".qmd", ".md"):
+                continue
+            out = SITE / q.relative_to(STAGE).with_suffix(".html")
+            if not out.exists() or out.stat().st_mtime_ns < q.stat().st_mtime_ns:
+                stale.append(q)
+        return stale
+
+    def touch_outputs(self) -> None:
+        now = time.time_ns()
+        for html in SITE.rglob("*.html"):
+            os.utime(html, ns=(now, now))
+
+    def render_stale(self, stale: list[Path]) -> None:
+        for q in stale:
+            result = subprocess.run(
+                ["quarto", "render", str(q)], cwd=ROOT, text=True, check=False
+            )
+            if result.returncode != 0:
+                sys.exit(f"quarto render {q} failed with exit code {result.returncode}")
+
+    def config_changed(self) -> bool:
+        cfg = STAGE / "_quarto.yml"
+        if not cfg.is_file() or not SITE.exists():
+            return True
+        cfg_ns = cfg.stat().st_mtime_ns
+        return any(cfg_ns > h.stat().st_mtime_ns for h in SITE.rglob("*.html"))
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -576,6 +620,16 @@ def main() -> None:
     print(f"staged {len(builder.published)} published files into {STAGE}")
     if not args.stage_only:
         if args.preview:
+            stale = builder.stale_outputs()
+            if stale and (builder.config_changed() or len(stale) > 10):
+                print(f"preview: full render ({len(stale)} stale files)")
+                builder.render()
+            elif stale:
+                print(f"preview: rendering {len(stale)} stale file(s)")
+                builder.render_stale(stale)
+            else:
+                print("preview: outputs up to date, skipping render")
+            builder.touch_outputs()
             subprocess.run(["quarto", "preview", str(STAGE)], cwd=ROOT, check=False)
         else:
             builder.render()

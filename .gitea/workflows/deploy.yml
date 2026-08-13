@@ -15,6 +15,6 @@ jobs:
         run: uvx --from 'git+${{ github.server_url }}/BritoAlv/quarto_custom.git@main' quarto-custom --config quarto_custom_site.toml --deploy
       - name: Deploy
         run: |
-          rm -rf "$HOME/.gitea/directedArticles/site"
-          mkdir -p "$HOME/.gitea/directedArticles"
-          cp -r site "$HOME/.gitea/directedArticles/site"
+          rm -rf "$HOME/.gitea/sites/directedArticles"
+          mkdir -p "$HOME/.gitea/sites"
+          cp -r site "$HOME/.gitea/sites/directedArticles"

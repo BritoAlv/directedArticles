@@ -6,3 +6,8 @@
 #quarto-sidebar .sidebar-item-text {
   line-height: 1.35rem;
 }
+
+#quarto-sidebar .sidebar-menu-container {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

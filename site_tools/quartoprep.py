@@ -514,6 +514,9 @@ class Builder:
         tree = self.tree()
         out: list[dict] = [{"href": "index.qmd"}]
 
+        def file_entry(kind: str, name: str, href: str) -> dict:
+            return {"href": href, "text": name}
+
         def section(label: str, node: dict) -> dict:
             entry: dict = {"section": label, "contents": []}
             for name, child in sorted(node["dirs"].items(), key=lambda kv: kv[0].lower()):
@@ -521,7 +524,7 @@ class Builder:
                     entry["contents"].append(section(humanize(name), child))
             page_files = [f for f in node["files"] if f[0] != "file"]
             for kind, name, href in sorted(page_files, key=lambda f: f[1].lower()):
-                entry["contents"].append({"href": href})
+                entry["contents"].append(file_entry(kind, name, href))
             return entry
 
         for name, node in sorted(tree["dirs"].items(), key=lambda kv: kv[0].lower()):
@@ -529,7 +532,7 @@ class Builder:
                 out.append(section(humanize(name), node))
         page_files = [f for f in tree["files"] if f[0] != "file"]
         for kind, name, href in sorted(page_files, key=lambda f: f[1].lower()):
-            out.append({"href": href})
+            out.append(file_entry(kind, name, href))
         out.append({"href": "tags.qmd"})
         return out
 

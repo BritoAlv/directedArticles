@@ -811,7 +811,7 @@ class Builder:
             "      if (a.querySelector('img.sidebar-file-icon')) continue;\n"
             "      var icon = null;\n"
             "      for (var key in icons) {\n"
-            "        if (a.href === base + key) { icon = icons[key]; break; }\n"
+            "        if (a.href === base + encodeURI(key)) { icon = icons[key]; break; }\n"
             "      }\n"
             "      if (!icon) continue;\n"
             "      var img = document.createElement('img');\n"

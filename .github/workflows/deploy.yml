@@ -16,37 +16,6 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install Quarto
-        uses: quarto-dev/quarto-actions/setup@v2
-        with:
-          version: 1.10.18
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v3
-        with:
-          enable-cache: true
-
-      - name: Install dependencies
-        run: uv sync
-
-      - name: Build site
-        env:
-          QUARTO_DEPLOY: "true"
-        run: uv run python site_tools/quartoprep.py
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+    uses: BritoAlv/quarto_custom/.github/workflows/deploy-pages.yml@main
+    with:
+      config: site.toml

@@ -4,8 +4,4 @@ As a way of understanding a topic someone should be able to do experiments aroun
 
 One of the goals is to represent the information in a way that allows algorithms like PageRank or a retrieval information system to use it.
 
-## Command
-
-```bash
-uv run python site_tools/quartoprep.py --preview
-```
+The site build is done using quarto, with some special configurations, [quarto_custom](https://github.com/BritoAlv/quarto_custom) package.

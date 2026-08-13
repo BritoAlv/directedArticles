@@ -10,11 +10,11 @@ jobs:
     runs-on: local
     steps:
       - name: Checkout
-        run: git clone http://localhost:3000/BritoAlv/directedArticles.git .
+        run: git clone "${{ github.server_url }}/${{ github.repository }}.git" .
       - name: Build site
-        run: uvx --from 'git+http://localhost:3000/BritoAlv/quarto_custom.git@main' quarto-custom --config quarto_custom_site.toml --deploy
+        run: uvx --from 'git+${{ github.server_url }}/BritoAlv/quarto_custom.git@main' quarto-custom --config quarto_custom_site.toml --deploy
       - name: Deploy
         run: |
-          rm -rf /srv/directedArticles/site
-          mkdir -p /srv/directedArticles
-          cp -r site /srv/directedArticles/site
+          rm -rf "$HOME/.gitea/directedArticles/site"
+          mkdir -p "$HOME/.gitea/directedArticles"
+          cp -r site "$HOME/.gitea/directedArticles/site"

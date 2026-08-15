@@ -16,4 +16,4 @@ concurrency:
 
 jobs:
   deploy:
-    uses: BritoAlv/quarto_custom/.github/workflows/deploy-pages.yml@main
+    uses: BritoAlv/hugo_custom/.github/workflows/deploy-pages.yml@main

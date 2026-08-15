@@ -1,0 +1,7 @@
+title = "Directed Articles"
+site-url = "https://britoalv.github.io/directedArticles/"
+brand = "DIRECTED ARTICLES"
+source = "self"
+stage = "hugo_src"
+output = "site"
+siteignore = ".siteignore"

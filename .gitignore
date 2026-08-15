@@ -172,6 +172,9 @@ venv.bak/
 
 # quarto staging project and state
 /quarto_src
+
+# hugo staging project
+/hugo_src
 /.quarto
 /_site
 **/*.quarto_ipynb

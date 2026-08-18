@@ -22,3 +22,18 @@ The problem is that lecture videos and books use an approach bottom-up, what I m
 Why use those and not others, this is the typical scenario that occurs on programming, one does not always start with the abstractions directly, the abstractions came after seeing the same behavior / structure repeated in many places.
 
 The approach I'll use is study the theory but in the chronological order that the theory was developed.
+
+## Timeline
+
+### Simplex Method by George B. Dantzig 
+
+
+#### Event: 
+
+George B. Dantzig develops the simplex method.
+
+#### Description:
+
+
+
+[Simplex](simplex.md)
